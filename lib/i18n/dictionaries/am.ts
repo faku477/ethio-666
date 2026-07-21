@@ -111,7 +111,7 @@ export const am = {
     certificateNumber: "የሰርተፊኬት ቁጥር",
     issuedOn: "የተሰጠበት ቀን",
     authorizedBy: "የተፈቀደው በ",
-    authorizedName: "አበበ በሶ በላ",
+    authorizedName: "ዶ/ር ሮቤል አለሙ መሸሻ",
     verifyHint: "ትክክለኛነቱን ለማረጋገጥ ይህን QR ኮድ ይቃኙ",
   },
 

@@ -106,7 +106,7 @@ export const en: Dictionary = {
     certificateNumber: "Certificate Number",
     issuedOn: "Date of Issue",
     authorizedBy: "Authorized By",
-    authorizedName: "Abebe Beso Bela",
+    authorizedName: "Dr. Robel Alemu Mesheha",
     verifyHint: "Scan this QR code to verify authenticity",
   },
 
