@@ -1,13 +1,63 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Registration system schema.
+// Docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  // Generated into lib/, not app/: anything under app/ belongs to the router's
+  // file tree and would be scanned on every rebuild.
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Registration {
+  id Int @id @default(autoincrement())
+
+  // Public identifiers. These — never `id` — appear in URLs, PDFs and QR codes.
+  registrationId    String @unique
+  certificateNumber String @unique
+
+  fullName         String
+  identificationId String @unique
+  phoneNumber      String @unique // stored normalized as +2519XXXXXXXX
+
+  /// Sensitive. Must never be selected for public pages, certificates or API
+  /// responses. Read it only through an explicitly admin-scoped query.
+  bankAccountNumber String
+
+  email String?
+
+  photoUrl      String
+  photoMimeType String
+  photoSize     Int
+
+  status RegistrationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([fullName])
+}
+
+/// One row per (prefix, year) holding the last number handed out.
+/// Numbers are allocated by atomically incrementing `lastValue` inside the same
+/// transaction that inserts the registration, so concurrent requests can never
+/// be handed the same REG-/CERT- number.
+model NumberSequence {
+  prefix    String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@id([prefix, year])
 }

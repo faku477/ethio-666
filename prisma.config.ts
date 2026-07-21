@@ -10,5 +10,9 @@ export default defineConfig({
   },
   datasource: {
     url: process.env["DATABASE_URL"],
+    // `migrate dev` diffs the schema against a throwaway database. Without an
+    // explicit shadow URL it tries to CREATE DATABASE, which managed Postgres
+    // providers usually forbid.
+    shadowDatabaseUrl: process.env["SHADOW_DATABASE_URL"],
   },
 });

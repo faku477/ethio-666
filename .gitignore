@@ -44,4 +44,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/app/generated/prisma
+# generated Prisma client — recreated by `prisma generate` (postinstall)
+/lib/generated/prisma
+
+# local development photo uploads (dev storage driver)
+.uploads/

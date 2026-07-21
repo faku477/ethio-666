@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { RegistrationForm } from "@/components/RegistrationForm";
 import { getDictionary, isLocale } from "@/lib/i18n";
 
 export async function generateMetadata({
@@ -13,11 +14,6 @@ export async function generateMetadata({
   return { title: dict.register.title };
 }
 
-/**
- * Registration page shell. The form itself (validation, photo upload, submit)
- * arrives in Phase 4 and mounts inside this card — the route, metadata and
- * layout exist now so the homepage CTA resolves to a real page.
- */
 export default async function RegisterPage({
   params,
 }: PageProps<"/[lang]/register">) {
@@ -34,7 +30,10 @@ export default async function RegisterPage({
       <p className="mt-2 text-sm text-muted">{dict.register.subtitle}</p>
 
       <div className="mt-8 rounded-2xl border border-line bg-surface p-6 shadow-sm sm:p-8">
-        <p className="text-sm text-muted">{dict.register.preparing}</p>
+        {/* The dictionary is resolved on the server and handed to the client
+            component as a prop, so no translation data ships for the locale
+            the visitor is not using. */}
+        <RegistrationForm locale={lang} dict={dict} />
       </div>
     </div>
   );

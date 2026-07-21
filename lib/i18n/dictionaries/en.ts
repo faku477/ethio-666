@@ -54,7 +54,41 @@ export const en: Dictionary = {
     optional: "optional",
     submit: "Register",
     submitting: "Submitting...",
-    preparing: "The form is being prepared.",
+
+    hints: {
+      phoneNumber: "For example: 0912345678 or +251912345678",
+      bankAccountNumber:
+        "Your bank account number never appears on the certificate or on any public page.",
+    },
+
+    photo: {
+      choose: "Choose photo",
+      replace: "Replace photo",
+      remove: "Remove photo",
+      hint: "JPG, PNG or WebP. Maximum 5 MB.",
+      previewAlt: "Preview of the selected photo",
+    },
+
+    errors: {
+      fullNameTooShort: "Full name must be at least 3 characters.",
+      fullNameTooLong: "Full name is too long.",
+      identificationIdInvalid: "Enter a valid identification number.",
+      identificationIdTaken: "This identification number is already registered.",
+      phoneNumberRequired: "Enter a phone number.",
+      phoneNumberInvalid: "Enter a valid Ethiopian phone number.",
+      phoneNumberTaken: "This phone number is already registered.",
+      bankAccountNumberInvalid: "Enter a valid bank account number.",
+      emailInvalid: "Enter a valid email address.",
+      photoRequired: "Upload a photo.",
+      photoType: "Only JPG, PNG and WebP images are allowed.",
+      photoTooLarge: "The photo is larger than 5 MB.",
+      rateLimited: "Too many attempts. Please wait a moment and try again.",
+      badRequest: "The submitted data is not valid.",
+      duplicate: "This registration already exists.",
+      uploadFailed: "The photo could not be uploaded. Please try again.",
+      serverError: "Registration failed. Please try again.",
+      networkError: "Could not reach the server. Check your connection.",
+    },
   },
 
   success: {

@@ -57,7 +57,41 @@ export const am = {
     optional: "አማራጭ",
     submit: "ይመዝገቡ",
     submitting: "በመላክ ላይ...",
-    preparing: "ቅጹ በዝግጅት ላይ ነው።",
+
+    hints: {
+      phoneNumber: "ለምሳሌ፦ 0912345678 ወይም +251912345678",
+      bankAccountNumber:
+        "የባንክ ሂሳብ ቁጥርዎ በሰርተፊኬቱ ላይ ወይም በሕዝባዊ ገጽ ላይ አይታይም።",
+    },
+
+    photo: {
+      choose: "ፎቶ ይምረጡ",
+      replace: "ፎቶ ይቀይሩ",
+      remove: "ፎቶ ያስወግዱ",
+      hint: "JPG፣ PNG ወይም WebP። ከ5 ሜባ መብለጥ የለበትም።",
+      previewAlt: "የተመረጠው ፎቶ ቅድመ እይታ",
+    },
+
+    errors: {
+      fullNameTooShort: "ሙሉ ስም ቢያንስ 3 ፊደላት መሆን አለበት።",
+      fullNameTooLong: "ሙሉ ስም በጣም ረጅም ነው።",
+      identificationIdInvalid: "ትክክለኛ የመታወቂያ ቁጥር ያስገቡ።",
+      identificationIdTaken: "ይህ የመታወቂያ ቁጥር አስቀድሞ ተመዝግቧል።",
+      phoneNumberRequired: "የስልክ ቁጥር ያስገቡ።",
+      phoneNumberInvalid: "ትክክለኛ የኢትዮጵያ የስልክ ቁጥር ያስገቡ።",
+      phoneNumberTaken: "ይህ የስልክ ቁጥር አስቀድሞ ተመዝግቧል።",
+      bankAccountNumberInvalid: "ትክክለኛ የባንክ ሂሳብ ቁጥር ያስገቡ።",
+      emailInvalid: "ትክክለኛ ኢሜይል ያስገቡ።",
+      photoRequired: "ፎቶ ይጫኑ።",
+      photoType: "የሚፈቀዱት JPG፣ PNG እና WebP ፎቶዎች ብቻ ናቸው።",
+      photoTooLarge: "ፎቶው ከ5 ሜባ በላይ ነው።",
+      rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
+      badRequest: "የላኩት መረጃ ትክክል አይደለም።",
+      duplicate: "ይህ ምዝገባ አስቀድሞ ተከናውኗል።",
+      uploadFailed: "ፎቶውን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+      serverError: "ምዝገባው አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+      networkError: "ከአገልጋዩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ያረጋግጡ።",
+    },
   },
 
   success: {
