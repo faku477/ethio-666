@@ -18,7 +18,8 @@ function createClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error(
-      "DATABASE_URL is not set. Copy .env.example to .env and fill it in.",
+      "DATABASE_URL is not set. Set it in your environment (locally in .env, " +
+        "on Vercel under Settings > Environment Variables).",
     );
   }
 
@@ -36,8 +37,30 @@ function createClient(): PrismaClient {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+function getClient(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createClient();
+  }
+  return globalForPrisma.prisma;
 }
+
+/**
+ * The client is created on first *use*, not on import.
+ *
+ * `next build` evaluates every route module to collect page data. Constructing
+ * the client at module scope therefore ran `createClient()` during the build,
+ * which failed the whole build with "DATABASE_URL is not set" — the database is
+ * a runtime dependency and is deliberately not exposed to the build step.
+ * Opening a connection pool at build time would be wrong even where the
+ * variable happens to be present.
+ *
+ * Methods are bound to the real client so `this` still refers to it, which
+ * matters for `$transaction` and the model delegates.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, property) {
+    const client = getClient();
+    const value = Reflect.get(client, property) as unknown;
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
