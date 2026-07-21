@@ -66,8 +66,8 @@ async function loadPhoto(photoUrl: string): Promise<string | null> {
  * Loads an optional branding asset from `public/`.
  *
  * Returns null when the file is absent so the certificate still renders — the
- * stamp and signature are decoration, and a missing one must not stop somebody
- * downloading their certificate.
+ * stamp is decoration, and a missing one must not stop somebody downloading
+ * their certificate.
  */
 async function loadPublicImage(filename: string): Promise<string | null> {
   try {
@@ -109,11 +109,10 @@ export async function GET(
   // verification page is public and the certificate number is its only key.
   const verifyUrl = `${appUrl(request)}/verify/${registration.certificateNumber}`;
 
-  const [qrCode, photo, stamp, signature] = await Promise.all([
+  const [qrCode, photo, stamp] = await Promise.all([
     QRCode.toDataURL(verifyUrl, { margin: 1, width: 320 }),
     loadPhoto(registration.photoUrl),
     loadPublicImage("stamp.png"),
-    loadPublicImage("signature.png"),
   ]);
 
   const data: CertificateData = {
@@ -125,7 +124,6 @@ export async function GET(
     qrCode,
     photo,
     stamp,
-    signature,
   };
 
   const pdf = await renderCertificatePdf(data, dict);

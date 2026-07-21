@@ -49,8 +49,6 @@ export type CertificateData = {
   photo: string | null;
   /** data: URI of the organization stamp, when `public/stamp.png` exists. */
   stamp: string | null;
-  /** data: URI of the authorizing signature, when `public/signature.png` exists. */
-  signature: string | null;
 };
 
 const styles = StyleSheet.create({
@@ -72,7 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.75,
     borderColor: "#d4a017",
     borderStyle: "solid",
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 26,
   },
   header: {
@@ -106,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 12,
   },
   name: {
     fontSize: 24,
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 13,
+    marginTop: 10,
   },
   program: {
     fontSize: 14,
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 16,
+    marginTop: 12,
   },
   photo: {
     width: 100,
@@ -165,7 +163,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     marginTop: "auto",
-    paddingTop: 8,
+    paddingTop: 4,
   },
   signature: { width: 200 },
   signatureLabel: { fontSize: 9, color: "#5b6b62" },
@@ -175,19 +173,20 @@ const styles = StyleSheet.create({
     color: "#0d1b14",
     marginTop: 4,
   },
-  signatureImage: {
-    width: 118,
-    height: 38,
+  /**
+   * The stamp sits in the signing position. The negative bottom margin pulls it
+   * down over the rule so it reads as a seal pressed across the line, and stops
+   * its full height from pushing the footer onto a second page.
+   */
+  signatureStamp: {
+    width: 84,
+    height: 84,
     objectFit: "contain",
-    // Left-aligned so the signature sits above the start of the rule rather
-    // than centred in the column.
     alignSelf: "flex-start",
-    marginTop: 2,
+    marginTop: 0,
+    marginBottom: -26,
   },
-  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 22 },
-  /** Applied instead of the 22pt gap when a signature image occupies it. */
-  signatureLineSigned: { marginTop: 2 },
-  footerStamp: { width: 98, height: 98 },
+  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 10 },
   serial: { fontSize: 7, color: "#8a9a91", textAlign: "right", marginTop: 6 },
 });
 
@@ -205,8 +204,11 @@ function CertificateDocument({
       title={`${t.title} — ${data.registrationId}`}
       author={dict.site.name}
     >
-      {/* A4 landscape prints cleanly on the paper size used in Ethiopia. */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
+      {/* A4 landscape prints cleanly on the paper size used in Ethiopia.
+          `wrap={false}` guarantees a certificate is always exactly one page:
+          without it, a long participant name or a locale with longer strings
+          silently spills onto a second, near-empty page. */}
+      <Page size="A4" orientation="landscape" style={styles.page} wrap={false}>
         <View style={styles.frame}>
           <View style={styles.inner}>
             <View style={styles.header}>
@@ -268,23 +270,11 @@ function CertificateDocument({
               <View style={styles.signature}>
                 <Text style={styles.signatureLabel}>{t.authorizedBy}</Text>
                 <Text style={styles.signatureName}>{t.authorizedName}</Text>
-                {data.signature && (
-                  <Image src={data.signature} style={styles.signatureImage} />
+                {data.stamp && (
+                  <Image src={data.stamp} style={styles.signatureStamp} />
                 )}
-                <View
-                  style={
-                    data.signature
-                      ? [styles.signatureLine, styles.signatureLineSigned]
-                      : styles.signatureLine
-                  }
-                />
+                <View style={styles.signatureLine} />
               </View>
-
-              {data.stamp ? (
-                <Image src={data.stamp} style={styles.footerStamp} />
-              ) : (
-                <View />
-              )}
             </View>
 
             <Text style={styles.serial}>{data.certificateNumber}</Text>
