@@ -90,16 +90,26 @@ export async function GET(
 
   // Narrow select. `bankAccountNumber` is not listed, so it cannot reach the
   // PDF even if the template were changed to print every field it receives.
-  const registration = await prisma.registration.findUnique({
-    where: { registrationId },
-    select: {
-      fullName: true,
-      registrationId: true,
-      certificateNumber: true,
-      photoUrl: true,
-      createdAt: true,
-    },
-  });
+  //
+  // Guarded: an unreachable database throws here, and an unhandled throw makes
+  // the download fail with an opaque platform error page. A 503 with a readable
+  // reason is what tells you the database is the problem.
+  let registration;
+  try {
+    registration = await prisma.registration.findUnique({
+      where: { registrationId },
+      select: {
+        fullName: true,
+        registrationId: true,
+        certificateNumber: true,
+        photoUrl: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    console.error("certificate lookup failed", error);
+    return new Response("Certificate service unavailable", { status: 503 });
+  }
 
   if (!registration) {
     return new Response("Not found", { status: 404 });
