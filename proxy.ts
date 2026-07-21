@@ -37,7 +37,12 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip API routes, Next.js internals and anything with a file extension.
-  // Without this, the rewrite would also mangle asset requests.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  // Skip API routes, ALL Next.js internals, and anything with a file extension.
+  //
+  // `_next` must be excluded in full, not just `_next/static` and `_next/image`:
+  // the dev server's HMR endpoint (`/_next/webpack-hmr`) has no file extension,
+  // so a narrower pattern rewrites it to `/am/_next/webpack-hmr`, it 404s, and
+  // the HMR client reconnect-loops — reloading the page about once a second and
+  // eating navigation clicks. `__nextjs*` covers the dev error-overlay routes.
+  matcher: ["/((?!api|_next|__nextjs|favicon.ico|.*\\..*).*)"],
 };

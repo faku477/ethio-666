@@ -55,8 +55,14 @@ export default async function RootLayout({
     <html
       lang={LOCALE_TAGS[lang]}
       className={`${latin.variable} ${ethiopic.variable} h-full antialiased`}
+      // Browser extensions (wallets, password managers, colour pickers) inject
+      // attributes onto <html> and <body> before React hydrates, which React
+      // reports as a mismatch. `suppressHydrationWarning` is shallow: it covers
+      // this element's own attributes only and does not hide mismatches in the
+      // app's own markup or in any child.
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <SiteHeader locale={lang} dict={dict} />
         <main className="flex-1">{children}</main>
         <SiteFooter locale={lang} dict={dict} />
