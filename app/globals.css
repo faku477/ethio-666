@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens.
+ *
+ * `--font-ethiopic` is listed after `--font-latin` in the sans stack on purpose:
+ * browsers fall back per glyph, so Latin text renders in Inter while Amharic
+ * glyphs — which Inter does not contain — resolve to Noto Sans Ethiopic.
+ */
+@theme {
+  --font-sans: var(--font-latin), var(--font-ethiopic), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-ethiopic: var(--font-noto-ethiopic), ui-sans-serif, sans-serif;
+
+  --color-brand-50: #ecfdf3;
+  --color-brand-100: #d1fadf;
+  --color-brand-200: #a6f4c5;
+  --color-brand-300: #6ce9a6;
+  --color-brand-400: #32d583;
+  --color-brand-500: #12b76a;
+  --color-brand-600: #039855;
+  --color-brand-700: #027a48;
+  --color-brand-800: #05603a;
+  --color-brand-900: #054f31;
+
+  --color-gold-400: #f2c94c;
+  --color-gold-500: #d4a017;
+  --color-gold-600: #b3820e;
+
+  --color-ink: #0d1b14;
+  --color-muted: #5b6b62;
+  --color-surface: #ffffff;
+  --color-canvas: #f7faf8;
+  --color-line: #e3ebe6;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    /* Amharic has tall ascenders and descenders; the default line-height
+       crowds them and clips marks on small screens. */
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /* Amharic has no letter case — never uppercase or letter-space it, and never
+     rely on `text-transform` for emphasis. */
+  :lang(am) {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
 }
