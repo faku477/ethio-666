@@ -101,6 +101,17 @@ export const am = {
     download: "ሰርተፊኬት አውርድ",
   },
 
+  certificate: {
+    title: "የምስክር ወረቀት",
+    presentedTo: "ይህ የምስክር ወረቀት የተሰጠው ለ",
+    statement: "በሚከተለው መርሃ ግብር በተሳካ ሁኔታ ስለተመዘገበ ነው፦",
+    registrationId: "የምዝገባ ቁጥር",
+    certificateNumber: "የሰርተፊኬት ቁጥር",
+    issuedOn: "የተሰጠበት ቀን",
+    authorizedBy: "የተፈቀደው በ",
+    verifyHint: "ትክክለኛነቱን ለማረጋገጥ ይህን QR ኮድ ይቃኙ",
+  },
+
   verify: {
     title: "የሰርተፊኬት ማረጋገጫ",
     valid: "ትክክለኛ ሰርተፊኬት",

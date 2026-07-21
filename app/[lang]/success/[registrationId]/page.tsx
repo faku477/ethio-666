@@ -81,12 +81,25 @@ export default async function SuccessPage({
           </div>
         </dl>
 
-        <Link
-          href={localePath(lang, "/")}
-          className="mt-8 inline-block text-sm font-medium text-brand-700 underline underline-offset-2 hover:text-brand-800"
-        >
-          {dict.common.backHome}
-        </Link>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* A plain anchor, not <Link>: this is a file download served by a
+              route handler, not a client-side navigation. `download` makes the
+              browser save it rather than trying to render the PDF inline. */}
+          <a
+            href={`/api/certificate/${registration.registrationId}?lang=${lang}`}
+            download
+            className="rounded-xl bg-brand-700 px-6 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-800"
+          >
+            {dict.success.download}
+          </a>
+
+          <Link
+            href={localePath(lang, "/")}
+            className="px-2 py-3 text-center text-sm font-medium text-brand-700 underline underline-offset-2 hover:text-brand-800"
+          >
+            {dict.common.backHome}
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -98,6 +98,17 @@ export const en: Dictionary = {
     download: "Download certificate",
   },
 
+  certificate: {
+    title: "Certificate",
+    presentedTo: "This is to certify that",
+    statement: "has successfully registered for",
+    registrationId: "Registration Number",
+    certificateNumber: "Certificate Number",
+    issuedOn: "Date of Issue",
+    authorizedBy: "Authorized By",
+    verifyHint: "Scan this QR code to verify authenticity",
+  },
+
   verify: {
     title: "Certificate Verification",
     valid: "Valid certificate",
