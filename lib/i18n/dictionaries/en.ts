@@ -2,7 +2,7 @@ import type { Dictionary } from "../types";
 
 export const en: Dictionary = {
   site: {
-    name: "Participant Registration System",
+    name: "Ethio-Illuminati (666) Registration Centre",
     shortName: "Registration",
     tagline: "Online registration and certificate service",
   },
@@ -16,7 +16,7 @@ export const en: Dictionary = {
 
   home: {
     eventName: "Membership Registration 2026",
-    title: "Participant Registration",
+    title: "Ethio-Illuminati (666) Registration Centre",
     description:
       "Register in minutes by submitting your details on this page. As soon as your registration is complete you receive a unique registration number and a certificate that can be verified through its QR code.",
     ctaPrimary: "Register",
@@ -41,7 +41,7 @@ export const en: Dictionary = {
   },
 
   register: {
-    title: "Participant Registration",
+    title: "Ethio-Illuminati (666) Registration Centre",
     subtitle: "Fields marked with * are required.",
     fields: {
       fullName: "Full name",

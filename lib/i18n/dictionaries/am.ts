@@ -5,7 +5,7 @@
  */
 export const am = {
   site: {
-    name: "የተመዝጋቢ ምዝገባ ሥርዓት",
+    name: "ኢትዮ-ኢሉሚናንት(666) የመመዝገቢያ ማዕከል",
     shortName: "ምዝገባ",
     tagline: "የመስመር ላይ ምዝገባ እና የሰርተፊኬት አገልግሎት",
   },
@@ -21,7 +21,7 @@ export const am = {
     // Year in Western digits, not Ethiopic numerals (፪ሺ፲፰), so it matches the
     // Gregorian dates printed elsewhere on the certificate.
     eventName: "የአባልነት ምዝገባ 2026",
-    title: "የተመዝጋቢ ምዝገባ",
+    title: "ኢትዮ-ኢሉሚናንት(666) የመመዝገቢያ ማዕከል",
     description:
       "በዚህ ገጽ በኩል መረጃዎን በማስገባት በቀላሉ መመዝገብ ይችላሉ። ምዝገባዎ እንደተጠናቀቀ ልዩ የምዝገባ ቁጥር እና በQR ኮድ የሚረጋገጥ ሰርተፊኬት ወዲያውኑ ያገኛሉ።",
     ctaPrimary: "ይመዝገቡ",
@@ -46,7 +46,7 @@ export const am = {
   },
 
   register: {
-    title: "የተመዝጋቢ ምዝገባ",
+    title: "ኢትዮ-ኢሉሚናንት(666) የመመዝገቢያ ማዕከል",
     subtitle: "በ * የተመለከቱት መስኮች ግዴታ ናቸው።",
     fields: {
       fullName: "ሙሉ ስም",
