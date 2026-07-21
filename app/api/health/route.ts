@@ -72,12 +72,17 @@ export async function GET() {
   }
 
   // 4. Photo storage. Without this, registration fails at the upload step.
-  const hasBlobToken = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  //    Either credential works: an explicit token, or BLOB_STORE_ID with OIDC,
+  //    which is what connecting a Blob store to the project provisions.
+  const blobToken = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  const blobStoreId = Boolean(process.env.BLOB_STORE_ID);
   checks.photoStorageConfigured = {
-    ok: hasBlobToken,
-    detail: hasBlobToken
-      ? undefined
-      : "BLOB_READ_WRITE_TOKEN is not set; uploads fail in production.",
+    ok: blobToken || blobStoreId,
+    detail: blobToken
+      ? "using BLOB_READ_WRITE_TOKEN"
+      : blobStoreId
+        ? "using BLOB_STORE_ID with OIDC"
+        : "No Blob credentials; uploads fail in production.",
   };
 
   // 5. The origin baked into certificate QR codes.

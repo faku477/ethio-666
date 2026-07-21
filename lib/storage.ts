@@ -42,19 +42,27 @@ export async function storePhoto(
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
 
-  if (token) {
+  // Two ways Vercel Blob authenticates:
+  //   - an explicit read/write token, or
+  //   - OIDC, where the SDK combines VERCEL_OIDC_TOKEN with BLOB_STORE_ID.
+  // Connecting a Blob store to a project now provisions BLOB_STORE_ID and no
+  // token, so requiring the token would refuse to upload on a correctly
+  // configured deployment. When there is no token, omit it and let the SDK
+  // resolve OIDC itself.
+  if (token || process.env.BLOB_STORE_ID) {
     const { put } = await import("@vercel/blob");
     const blob = await put(key, file, {
       access: "public",
       contentType: mimeType,
-      token,
+      ...(token ? { token } : {}),
     });
     return { url: blob.url, mimeType, size: file.size };
   }
 
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "BLOB_READ_WRITE_TOKEN is not set. Photo storage is unavailable in production.",
+      "No Blob credentials found. Set BLOB_READ_WRITE_TOKEN, or connect a Blob " +
+        "store to the project so BLOB_STORE_ID and OIDC are available.",
     );
   }
 
