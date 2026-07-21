@@ -65,7 +65,7 @@ export const en: Dictionary = {
       choose: "Choose photo",
       replace: "Replace photo",
       remove: "Remove photo",
-      hint: "JPG, PNG or WebP. Maximum 5 MB.",
+      hint: "JPG, PNG or WebP. Maximum 4 MB.",
       previewAlt: "Preview of the selected photo",
     },
 
@@ -81,7 +81,7 @@ export const en: Dictionary = {
       emailInvalid: "Enter a valid email address.",
       photoRequired: "Upload a photo.",
       photoType: "Only JPG, PNG and WebP images are allowed.",
-      photoTooLarge: "The photo is larger than 5 MB.",
+      photoTooLarge: "The photo is larger than 4 MB.",
       rateLimited: "Too many attempts. Please wait a moment and try again.",
       badRequest: "The submitted data is not valid.",
       duplicate: "This registration already exists.",

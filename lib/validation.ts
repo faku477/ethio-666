@@ -8,7 +8,11 @@ import { z } from "zod";
  * The UI resolves the key through `dict.register.errors`.
  */
 
-export const PHOTO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+// 4 MB, deliberately under Vercel's 4.5 MB serverless request body limit.
+// A larger cap would let the platform reject the request with a 413 before our
+// own validation ever runs, producing an unexplained failure instead of a
+// readable "photo too large" message.
+export const PHOTO_MAX_BYTES = 4 * 1024 * 1024;
 
 export const ALLOWED_PHOTO_TYPES = [
   "image/jpeg",

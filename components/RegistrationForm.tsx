@@ -207,12 +207,37 @@ export function RegistrationForm({ locale, dict }: Props) {
         body: payload,
       });
 
-      const result = await response.json();
+      // Parse defensively. A failure upstream of the route — a platform error
+      // page, a 413 from a request body over the host's limit — is not JSON,
+      // and letting `.json()` throw here would surface a genuine server fault
+      // as "check your connection", which sends people looking in the wrong
+      // place entirely.
+      let result: {
+        success?: boolean;
+        registrationId?: string;
+        error?: string;
+        fieldErrors?: FieldErrors;
+      } | null = null;
 
-      if (!response.ok || !result.success) {
+      try {
+        result = await response.json();
+      } catch {
+        console.error(
+          `Registration failed: server returned a non-JSON response (HTTP ${response.status}).`,
+        );
+      }
+
+      if (!response.ok || !result?.success) {
         if (result?.fieldErrors) setFieldErrors(result.fieldErrors);
-        if (result?.error) setFormError(result.error);
-        else if (!result?.fieldErrors) setFormError("serverError");
+
+        if (result?.error) {
+          setFormError(result.error);
+        } else if (!result?.fieldErrors) {
+          // No structured body: distinguish "too big" from a generic fault so
+          // the message is actionable.
+          setFormError(response.status === 413 ? "photoTooLarge" : "serverError");
+        }
+
         setSubmitting(false);
         return;
       }

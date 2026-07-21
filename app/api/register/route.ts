@@ -83,15 +83,26 @@ export async function POST(request: Request) {
 
   // Duplicate check before the upload, so an obvious rejection does not leave a
   // stray object in storage.
-  const existing = await prisma.registration.findFirst({
-    where: {
-      OR: [
-        { identificationId: data.identificationId },
-        { phoneNumber: data.phoneNumber },
-      ],
-    },
-    select: { identificationId: true, phoneNumber: true },
-  });
+  //
+  // Guarded: an unreachable or unconfigured database throws here, and an
+  // unhandled throw makes Next return an HTML error page. The client then fails
+  // to parse it as JSON and reports a connection problem, hiding the real
+  // cause. Every exit from this route must be structured JSON.
+  let existing: { identificationId: string; phoneNumber: string } | null;
+  try {
+    existing = await prisma.registration.findFirst({
+      where: {
+        OR: [
+          { identificationId: data.identificationId },
+          { phoneNumber: data.phoneNumber },
+        ],
+      },
+      select: { identificationId: true, phoneNumber: true },
+    });
+  } catch (error) {
+    console.error("duplicate check failed", error);
+    return failure({ success: false, error: "serverError" }, 500);
+  }
 
   if (existing) {
     return failure(

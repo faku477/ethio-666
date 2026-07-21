@@ -70,7 +70,7 @@ export const am = {
       choose: "ፎቶ ይምረጡ",
       replace: "ፎቶ ይቀይሩ",
       remove: "ፎቶ ያስወግዱ",
-      hint: "JPG፣ PNG ወይም WebP። ከ5 ሜባ መብለጥ የለበትም።",
+      hint: "JPG፣ PNG ወይም WebP። ከ4 ሜባ መብለጥ የለበትም።",
       previewAlt: "የተመረጠው ፎቶ ቅድመ እይታ",
     },
 
@@ -86,7 +86,7 @@ export const am = {
       emailInvalid: "ትክክለኛ ኢሜይል ያስገቡ።",
       photoRequired: "ፎቶ ይጫኑ።",
       photoType: "የሚፈቀዱት JPG፣ PNG እና WebP ፎቶዎች ብቻ ናቸው።",
-      photoTooLarge: "ፎቶው ከ5 ሜባ በላይ ነው።",
+      photoTooLarge: "ፎቶው ከ4 ሜባ በላይ ነው።",
       rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
       badRequest: "የላኩት መረጃ ትክክል አይደለም።",
       duplicate: "ይህ ምዝገባ አስቀድሞ ተከናውኗል።",
