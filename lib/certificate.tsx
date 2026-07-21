@@ -49,13 +49,15 @@ export type CertificateData = {
   photo: string | null;
   /** data: URI of the organization stamp, when `public/stamp.png` exists. */
   stamp: string | null;
+  /** data: URI of the authorizing signature, when `public/signature.png` exists. */
+  signature: string | null;
 };
 
 const styles = StyleSheet.create({
   page: {
     fontFamily: "NotoEthiopic",
     backgroundColor: "#ffffff",
-    paddingVertical: 34,
+    paddingVertical: 24,
     paddingHorizontal: 40,
   },
   frame: {
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.75,
     borderColor: "#d4a017",
     borderStyle: "solid",
-    paddingVertical: 22,
+    paddingVertical: 16,
     paddingHorizontal: 26,
   },
   header: {
@@ -78,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  headerStamp: { width: 62, height: 62 },
-  headerSpacer: { width: 62 },
+  headerStamp: { width: 78, height: 78 },
+  headerSpacer: { width: 78 },
   title: {
     fontSize: 27,
     fontWeight: 700,
@@ -98,13 +100,13 @@ const styles = StyleSheet.create({
     width: 108,
     height: 2,
     backgroundColor: "#d4a017",
-    marginTop: 12,
+    marginTop: 8,
   },
   presentedTo: {
     fontSize: 11,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 16,
   },
   name: {
     fontSize: 24,
@@ -118,13 +120,13 @@ const styles = StyleSheet.create({
     width: "62%",
     height: 0.75,
     backgroundColor: "#e3ebe6",
-    marginTop: 10,
+    marginTop: 8,
   },
   statement: {
     fontSize: 11,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 14,
+    marginTop: 13,
   },
   program: {
     fontSize: 14,
@@ -136,11 +138,11 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 22,
+    marginTop: 16,
   },
   photo: {
-    width: 78,
-    height: 78,
+    width: 100,
+    height: 100,
     objectFit: "cover",
     borderWidth: 0.75,
     borderColor: "#e3ebe6",
@@ -150,8 +152,8 @@ const styles = StyleSheet.create({
   detailRow: { flexDirection: "row", marginBottom: 6 },
   detailLabel: { fontSize: 9, color: "#5b6b62", width: 108 },
   detailValue: { fontSize: 11, fontWeight: 700, color: "#0d1b14" },
-  qrBlock: { alignItems: "center", width: 92 },
-  qr: { width: 76, height: 76 },
+  qrBlock: { alignItems: "center", width: 104 },
+  qr: { width: 84, height: 84 },
   qrHint: {
     fontSize: 6,
     color: "#5b6b62",
@@ -163,13 +165,30 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     marginTop: "auto",
-    paddingTop: 14,
+    paddingTop: 8,
   },
-  signature: { width: 172 },
-  signatureLine: { height: 0.75, backgroundColor: "#0d1b14" },
-  signatureLabel: { fontSize: 9, color: "#5b6b62", marginTop: 5 },
-  footerStamp: { width: 74, height: 74 },
-  serial: { fontSize: 7, color: "#8a9a91" },
+  signature: { width: 200 },
+  signatureLabel: { fontSize: 9, color: "#5b6b62" },
+  signatureName: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: "#0d1b14",
+    marginTop: 4,
+  },
+  signatureImage: {
+    width: 118,
+    height: 38,
+    objectFit: "contain",
+    // Left-aligned so the signature sits above the start of the rule rather
+    // than centred in the column.
+    alignSelf: "flex-start",
+    marginTop: 2,
+  },
+  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 22 },
+  /** Applied instead of the 22pt gap when a signature image occupies it. */
+  signatureLineSigned: { marginTop: 2 },
+  footerStamp: { width: 98, height: 98 },
+  serial: { fontSize: 7, color: "#8a9a91", textAlign: "right", marginTop: 6 },
 });
 
 function CertificateDocument({
@@ -244,9 +263,21 @@ function CertificateDocument({
             </View>
 
             <View style={styles.footer}>
+              {/* Label, then the authorizing person's name, then the rule they
+                  sign on — so the signature sits over the printed name. */}
               <View style={styles.signature}>
-                <View style={styles.signatureLine} />
                 <Text style={styles.signatureLabel}>{t.authorizedBy}</Text>
+                <Text style={styles.signatureName}>{t.authorizedName}</Text>
+                {data.signature && (
+                  <Image src={data.signature} style={styles.signatureImage} />
+                )}
+                <View
+                  style={
+                    data.signature
+                      ? [styles.signatureLine, styles.signatureLineSigned]
+                      : styles.signatureLine
+                  }
+                />
               </View>
 
               {data.stamp ? (
@@ -254,9 +285,9 @@ function CertificateDocument({
               ) : (
                 <View />
               )}
-
-              <Text style={styles.serial}>{data.certificateNumber}</Text>
             </View>
+
+            <Text style={styles.serial}>{data.certificateNumber}</Text>
           </View>
         </View>
       </Page>

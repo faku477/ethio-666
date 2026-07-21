@@ -15,7 +15,7 @@ export const en: Dictionary = {
   },
 
   home: {
-    eventName: "National Training Programme 2026",
+    eventName: "Membership Registration 2026",
     title: "Participant Registration",
     description:
       "Register in minutes by submitting your details on this page. As soon as your registration is complete you receive a unique registration number and a certificate that can be verified through its QR code.",
@@ -106,6 +106,7 @@ export const en: Dictionary = {
     certificateNumber: "Certificate Number",
     issuedOn: "Date of Issue",
     authorizedBy: "Authorized By",
+    authorizedName: "Abebe Beso Bela",
     verifyHint: "Scan this QR code to verify authenticity",
   },
 

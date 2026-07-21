@@ -18,7 +18,9 @@ export const am = {
   },
 
   home: {
-    eventName: "ብሔራዊ የሥልጠና መርሃ ግብር ፪ሺ፲፰",
+    // Year in Western digits, not Ethiopic numerals (፪ሺ፲፰), so it matches the
+    // Gregorian dates printed elsewhere on the certificate.
+    eventName: "የአባልነት ምዝገባ 2026",
     title: "የተመዝጋቢ ምዝገባ",
     description:
       "በዚህ ገጽ በኩል መረጃዎን በማስገባት በቀላሉ መመዝገብ ይችላሉ። ምዝገባዎ እንደተጠናቀቀ ልዩ የምዝገባ ቁጥር እና በQR ኮድ የሚረጋገጥ ሰርተፊኬት ወዲያውኑ ያገኛሉ።",
@@ -109,6 +111,7 @@ export const am = {
     certificateNumber: "የሰርተፊኬት ቁጥር",
     issuedOn: "የተሰጠበት ቀን",
     authorizedBy: "የተፈቀደው በ",
+    authorizedName: "አበበ በሶ በላ",
     verifyHint: "ትክክለኛነቱን ለማረጋገጥ ይህን QR ኮድ ይቃኙ",
   },
 
