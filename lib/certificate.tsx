@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   /** The membership declaration — the largest block of prose on the page, so
    *  it carries its own line height rather than the Latin default. */
   statement: {
-    fontSize: 18,
+    fontSize: 20,
     lineHeight: 1.6,
     color: "#116ed1",
     textAlign: "center",
@@ -316,13 +316,7 @@ function CertificateDocument({
             <View style={styles.footer}>
               {/* Greeting, then what sits below it (stamp and signature), then
                   the seal pressed across the rule the name is printed under. */}
-              <View style={styles.signature}>
-                {data.stamp && (
-                  <Image src={data.stamp} style={styles.signatureStamp} />
-                )}
-                <View style={styles.signatureLine} />
-                <Text style={styles.signatureName}>{t.authorizedName}</Text>
-              </View>
+
 
               {/* Emblems, flanking the stamp on the right of the footer. */}
               <View style={styles.emblemRow}>
