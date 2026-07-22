@@ -14,21 +14,27 @@ const MAX_REQUESTS = 5;
  * is NOT a real control — Phase 7 replaces it with a shared store
  * (Upstash Redis / Vercel KV) so the limit holds across instances.
  */
-export function checkRateLimit(key: string): {
+export function checkRateLimit(
+  key: string,
+  options: { windowMs?: number; max?: number } = {},
+): {
   allowed: boolean;
   retryAfterSeconds: number;
 } {
+  const windowMs = options.windowMs ?? WINDOW_MS;
+  const max = options.max ?? MAX_REQUESTS;
+
   const now = Date.now();
   const bucket = buckets.get(key);
 
   if (!bucket || now >= bucket.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    buckets.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true, retryAfterSeconds: 0 };
   }
 
   bucket.count += 1;
 
-  if (bucket.count > MAX_REQUESTS) {
+  if (bucket.count > max) {
     return {
       allowed: false,
       retryAfterSeconds: Math.ceil((bucket.resetAt - now) / 1000),

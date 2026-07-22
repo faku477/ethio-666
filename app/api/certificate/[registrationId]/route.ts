@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import { renderCertificatePdf, type CertificateData } from "@/lib/certificate";
 import { DEFAULT_LOCALE, formatDate, getDictionary, isLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { canDownloadCertificate } from "@/lib/status";
 import { LOCAL_UPLOAD_DIR } from "@/lib/storage";
 
 /** @react-pdf/renderer and the font loader need Node APIs, not the edge runtime. */
@@ -100,9 +101,12 @@ export async function GET(
       where: { registrationId },
       select: {
         fullName: true,
+        identificationId: true,
         registrationId: true,
         certificateNumber: true,
         photoUrl: true,
+        status: true,
+        approvedAt: true,
         createdAt: true,
       },
     });
@@ -113,6 +117,19 @@ export async function GET(
 
   if (!registration) {
     return new Response("Not found", { status: 404 });
+  }
+
+  // THE authorization check for certificates. Hiding the download button is a
+  // UI courtesy; this is the control. A registration that has not been approved
+  // has no certificate, however the URL is reached.
+  if (!canDownloadCertificate(registration.status)) {
+    return new Response(dict.status.certificateLocked, {
+      status: 403,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "private, no-store",
+      },
+    });
   }
 
   // The QR encodes the certificate number, never the registration id — the
@@ -127,9 +144,12 @@ export async function GET(
 
   const data: CertificateData = {
     fullName: registration.fullName,
+    identificationId: registration.identificationId,
     registrationId: registration.registrationId,
     certificateNumber: registration.certificateNumber,
-    issuedOn: formatDate(registration.createdAt, locale),
+    registeredOn: formatDate(registration.createdAt, locale),
+    // The certificate is issued at approval, not at registration.
+    issuedOn: formatDate(registration.approvedAt ?? registration.createdAt, locale),
     eventName: dict.home.eventName,
     qrCode,
     photo,

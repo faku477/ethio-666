@@ -31,6 +31,12 @@ export function SiteHeader({
 
         <div className="flex items-center gap-4">
           <Link
+            href={localePath(locale, "/status")}
+            className="hidden text-sm font-medium text-brand-700 underline-offset-2 transition-colors hover:text-brand-800 hover:underline sm:inline-block"
+          >
+            {dict.nav.status}
+          </Link>
+          <Link
             href={localePath(locale, "/register")}
             className="hidden rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-800 sm:inline-block"
           >

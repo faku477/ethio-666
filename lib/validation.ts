@@ -135,6 +135,159 @@ export function collectFieldErrors(error: z.ZodError): FieldErrors {
   return errors;
 }
 
+/* -------------------------------------------------------------------------
+ * Payment proof
+ * ---------------------------------------------------------------------- */
+
+/** Same 4 MB ceiling as photos, for the same reason: Vercel rejects a larger
+ *  request body itself, before this validation could produce a readable error. */
+export const RECEIPT_MAX_BYTES = 4 * 1024 * 1024;
+
+export const ALLOWED_RECEIPT_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+] as const;
+
+/** `%PDF-` — the only non-image receipt format accepted. */
+const PDF_SIGNATURE = [0x25, 0x50, 0x44, 0x46, 0x2d];
+
+/**
+ * Returns the receipt type implied by the file's leading bytes, or null.
+ *
+ * A receipt is uploaded by an unauthenticated visitor and later opened by an
+ * administrator, so the declared MIME type is worth nothing: the bytes decide
+ * what the file is and therefore what `Content-Type` it may be served with.
+ */
+export function sniffReceiptType(buffer: Uint8Array): string | null {
+  const image = sniffImageType(buffer);
+  if (image) return image;
+
+  const head = buffer.subarray(0, PDF_SIGNATURE.length);
+  if (
+    head.length === PDF_SIGNATURE.length &&
+    PDF_SIGNATURE.every((b, i) => head[i] === b)
+  ) {
+    return "application/pdf";
+  }
+
+  return null;
+}
+
+/** Validates receipt metadata on both sides. Returns a dictionary key or null. */
+export function validateReceiptMeta(file: File | null): string | null {
+  if (!file || file.size === 0) return null; // A receipt is optional.
+  if (
+    !ALLOWED_RECEIPT_TYPES.includes(
+      file.type as (typeof ALLOWED_RECEIPT_TYPES)[number],
+    )
+  ) {
+    return "receiptType";
+  }
+  if (file.size > RECEIPT_MAX_BYTES) return "receiptTooLarge";
+  return null;
+}
+
+export const paymentReferenceSchema = z
+  .string()
+  .trim()
+  .min(4, "referenceInvalid")
+  .max(60, "referenceInvalid")
+  // Bank references vary widely; allow the printable set they actually use and
+  // nothing else, so nothing that could be mistaken for markup is ever stored.
+  .regex(/^[A-Za-z0-9/\-_. ]+$/, "referenceInvalid");
+
+export type PaymentFieldErrors = Partial<
+  Record<"reference" | "receipt" | "form", string>
+>;
+
+/**
+ * Validates a payment submission: a reference number, a receipt file, or both.
+ *
+ * Returns field errors keyed the same way the form renders them; an empty
+ * object means the submission is valid.
+ */
+export function validatePaymentSubmission(input: {
+  reference: string;
+  receipt: File | null;
+}): PaymentFieldErrors {
+  const errors: PaymentFieldErrors = {};
+
+  const hasReference = input.reference.trim().length > 0;
+  const hasReceipt = Boolean(input.receipt && input.receipt.size > 0);
+
+  if (!hasReference && !hasReceipt) {
+    errors.form = "paymentProofRequired";
+    return errors;
+  }
+
+  if (hasReference) {
+    const parsed = paymentReferenceSchema.safeParse(input.reference);
+    if (!parsed.success) errors.reference = parsed.error.issues[0]!.message;
+  }
+
+  const receiptError = validateReceiptMeta(input.receipt);
+  if (receiptError) errors.receipt = receiptError;
+
+  return errors;
+}
+
+/* -------------------------------------------------------------------------
+ * Admin
+ * ---------------------------------------------------------------------- */
+
+export const adminLoginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("emailInvalid"),
+  password: z.string().min(1, "passwordRequired"),
+});
+
+export const passwordChangeSchema = z
+  .object({
+    currentPassword: z.string().min(1, "passwordRequired"),
+    // Long rather than gimmicky: length is the property that actually resists
+    // guessing, and complexity rules push people towards Password1!.
+    newPassword: z.string().min(12, "passwordTooShort").max(200, "passwordTooLong"),
+    confirmPassword: z.string(),
+  })
+  .refine((v) => v.newPassword === v.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "passwordMismatch",
+  })
+  .refine((v) => v.newPassword !== v.currentPassword, {
+    path: ["newPassword"],
+    message: "passwordUnchanged",
+  });
+
+export const paymentSettingsSchema = z.object({
+  paymentMethod: z.string().trim().min(2, "required").max(100, "tooLong"),
+  accountName: z.string().trim().min(2, "required").max(120, "tooLong"),
+  accountNumber: z.string().trim().min(2, "required").max(60, "tooLong"),
+  paymentAddress: z.string().trim().min(2, "required").max(300, "tooLong"),
+  amount: z.string().trim().max(60, "tooLong").optional(),
+  instructions: z.string().trim().max(1000, "tooLong").optional(),
+});
+
+/** Rejection reason an administrator may attach when refusing a registration. */
+export const rejectionReasonSchema = z
+  .string()
+  .trim()
+  .max(500, "tooLong")
+  .optional();
+
+/**
+ * The identification number used to look a registration up.
+ *
+ * Same rules as registration, so a lookup can never be a different shape from
+ * what was stored.
+ */
+export const identificationLookupSchema = z
+  .string()
+  .trim()
+  .min(4, "identificationIdInvalid")
+  .max(30, "identificationIdInvalid")
+  .regex(/^[A-Za-z0-9/-]+$/, "identificationIdInvalid");
+
 /** Validates the photo the same way on both sides, minus the byte sniffing. */
 export function validatePhotoMeta(file: File | null): string | null {
   if (!file || file.size === 0) return "photoRequired";

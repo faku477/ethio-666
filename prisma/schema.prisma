@@ -12,9 +12,23 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Registration lifecycle.
+///
+/// `PENDING` is "pending payment" — the state every registration starts in and
+/// the one the UI labels *Pending Payment*. It keeps its original name so rows
+/// created before the payment workflow existed stay valid.
 enum RegistrationStatus {
   PENDING
+  PAYMENT_SUBMITTED
   APPROVED
+  REJECTED
+}
+
+/// State of the payment proof attached to a registration. A registration with
+/// no `Payment` row has simply not paid yet.
+enum PaymentStatus {
+  SUBMITTED
+  VERIFIED
   REJECTED
 }
 
@@ -41,12 +55,136 @@ model Registration {
 
   status RegistrationStatus @default(PENDING)
 
+  /// Set when the participant submits payment proof; cleared by nothing.
+  paymentSubmittedAt DateTime?
+
+  /// Approval audit trail. `approvedBy` is kept as a relation rather than a
+  /// copied name so the acting administrator can never be forged after the fact.
+  approvedAt  DateTime?
+  approvedBy  AdminUser? @relation("RegistrationApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedById Int?
+
+  rejectedAt      DateTime?
+  /// Free text shown to the participant when a registration is rejected.
+  rejectionReason String?
+
+  payment Payment?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
   @@index([fullName])
+  @@index([approvedById])
+}
+
+/// Payment proof for a registration.
+///
+/// Kept in its own table rather than as columns on `Registration`: it has its
+/// own lifecycle (submitted -> verified/rejected), its own actor, and its own
+/// timestamps. One row per registration — re-submitting proof overwrites the
+/// previous attempt, which is what a participant correcting a typo expects.
+model Payment {
+  id Int @id @default(autoincrement())
+
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  registrationId Int          @unique
+
+  /// The bank/transfer reference the participant typed. Optional: a receipt
+  /// file alone is a valid submission.
+  referenceNumber String?
+
+  /// Location of the uploaded receipt. Never served directly — receipts are
+  /// read back only through the admin-authenticated receipt route.
+  receiptUrl      String?
+  receiptMimeType String?
+  receiptSize     Int?
+
+  status PaymentStatus @default(SUBMITTED)
+
+  submittedAt DateTime  @default(now())
+  verifiedAt  DateTime?
+
+  verifiedBy   AdminUser? @relation("PaymentVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedById Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([verifiedById])
+}
+
+/// An administrator who can review payments and approve registrations.
+model AdminUser {
+  id Int @id @default(autoincrement())
+
+  email String @unique
+  name  String
+
+  /// scrypt hash, formatted `scrypt$N$r$p$salt$hash`. Never a plaintext or
+  /// reversible value, and never selected into anything that leaves the server.
+  passwordHash String
+
+  /// Seeded accounts start with the documented default password; the dashboard
+  /// nags until it has been changed.
+  mustChangePassword Boolean @default(true)
+
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+
+  sessions              AdminSession[]
+  approvedRegistrations Registration[] @relation("RegistrationApprover")
+  verifiedPayments      Payment[]      @relation("PaymentVerifier")
+  updatedSettings       PaymentSetting[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Server-side admin session.
+///
+/// The primary key is the SHA-256 hash of the session token, not the token
+/// itself: a database leak then yields no usable cookies. Sessions are rows and
+/// not signed JWTs so that logout, and disabling an account, take effect at once.
+model AdminSession {
+  tokenHash String @id
+
+  admin   AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId Int
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  ipAddress String?
+  userAgent String?
+
+  @@index([adminId])
+  @@index([expiresAt])
+}
+
+/// Payment instructions shown to participants. A single row (`id = 1`) that the
+/// administrator edits from the dashboard, so bank details can change without a
+/// deployment.
+model PaymentSetting {
+  id Int @id @default(1)
+
+  paymentMethod String
+  accountName   String
+  accountNumber String
+  paymentAddress String
+  /// Fee as free text (e.g. "500 ETB") — currency and formatting vary.
+  amount        String?
+  /// Optional extra guidance rendered under the account details.
+  instructions  String?
+
+  updatedBy   AdminUser? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedById Int?
+
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedById])
 }
 
 /// One row per (prefix, year) holding the last number handed out.

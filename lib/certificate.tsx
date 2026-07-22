@@ -39,8 +39,17 @@ Font.registerHyphenationCallback((word) => [word]);
 
 export type CertificateData = {
   fullName: string;
+  /**
+   * Printed on the certificate itself, which is released only to the approved
+   * holder over a private, no-store response. It is still withheld from the
+   * public verification page and from every API response.
+   */
+  identificationId: string;
   registrationId: string;
   certificateNumber: string;
+  /** Date the participant registered. */
+  registeredOn: string;
+  /** Date the certificate was issued — i.e. when an administrator approved it. */
   issuedOn: string;
   eventName: string;
   /** data: URI of the QR code pointing at the public verification URL. */
@@ -247,10 +256,18 @@ function CertificateDocument({
                   <Text style={styles.detailValue}>{data.registrationId}</Text>
                 </View>
                 <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>{t.identificationId}</Text>
+                  <Text style={styles.detailValue}>{data.identificationId}</Text>
+                </View>
+                <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>{t.certificateNumber}</Text>
                   <Text style={styles.detailValue}>
                     {data.certificateNumber}
                   </Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>{t.registeredOn}</Text>
+                  <Text style={styles.detailValue}>{data.registeredOn}</Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>{t.issuedOn}</Text>

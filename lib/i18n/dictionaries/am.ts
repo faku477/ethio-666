@@ -14,6 +14,7 @@ export const am = {
     home: "መነሻ",
     register: "ይመዝገቡ",
     verify: "ሰርተፊኬት አረጋግጥ",
+    status: "ሁኔታ ይመልከቱ",
     switchLanguage: "ቋንቋ ይምረጡ",
   },
 
@@ -23,7 +24,7 @@ export const am = {
     eventName: "የአባልነት ምዝገባ 2026",
     title: "ኢትዮ-ኢሉሚናንት(666) የመመዝገቢያ ማዕከል",
     description:
-      "በዚህ ገጽ በኩል መረጃዎን በማስገባት በቀላሉ መመዝገብ ይችላሉ። ምዝገባዎ እንደተጠናቀቀ ልዩ የምዝገባ ቁጥር እና በQR ኮድ የሚረጋገጥ ሰርተፊኬት ወዲያውኑ ያገኛሉ።",
+      "በዚህ ገጽ በኩል መረጃዎን በማስገባት በቀላሉ መመዝገብ ይችላሉ። ምዝገባዎ እንደተጠናቀቀ ልዩ የምዝገባ ቁጥር ያገኛሉ፤ የምዝገባ ክፍያውን ፈጽመው ማረጋገጫ ካላኩ እና አስተዳዳሪው ካጸደቀ በኋላ በQR ኮድ የሚረጋገጥ ሰርተፊኬትዎን ማውረድ ይችላሉ።",
     ctaPrimary: "ይመዝገቡ",
     stepsTitle: "ምዝገባው እንዴት ይከናወናል?",
     steps: [
@@ -36,13 +37,17 @@ export const am = {
         body: "ግልጽ የሆነ የፓስፖርት መጠን ያለው ፎቶ ይጫኑ። ከመላክዎ በፊት ማየትና መቀየር ይችላሉ።",
       },
       {
+        title: "ክፍያውን ይፈጽሙ",
+        body: "የምዝገባ ክፍያውን ከፈጸሙ በኋላ ደረሰኝዎን ወይም የክፍያ ማጣቀሻ ቁጥርዎን ይላኩ።",
+      },
+      {
         title: "ሰርተፊኬትዎን ያውርዱ",
-        body: "ምዝገባዎ ሲጠናቀቅ የምዝገባ ቁጥርዎን ተቀብለው ሰርተፊኬትዎን በPDF ማውረድ ይችላሉ።",
+        body: "አስተዳዳሪው ክፍያዎን አረጋግጦ ምዝገባዎን ካጸደቀ በኋላ ሰርተፊኬትዎን በPDF ማውረድ ይችላሉ።",
       },
     ],
     securityTitle: "የመረጃዎ ደህንነት",
     securityBody:
-      "የባንክ ሂሳብ ቁጥርዎ እና የመታወቂያ ቁጥርዎ በሰርተፊኬቱ ላይ ወይም በሕዝባዊ የማረጋገጫ ገጽ ላይ በፍጹም አይታዩም። መረጃዎ በተጠበቀ ግንኙነት ብቻ ይተላለፋል።",
+      "የባንክ ሂሳብ ቁጥርዎ በሰርተፊኬቱ ላይም ሆነ በሕዝባዊ የማረጋገጫ ገጽ ላይ በፍጹም አይታይም። የመታወቂያ ቁጥርዎ የሚታየው እርስዎ በሚያወርዱት ሰርተፊኬት ላይ ብቻ ሲሆን፣ በሕዝባዊ የማረጋገጫ ገጽ ላይ አይታይም። መረጃዎ በተጠበቀ ግንኙነት ብቻ ይተላለፋል።",
   },
 
   register: {
@@ -101,6 +106,248 @@ export const am = {
     registrationId: "የምዝገባ ቁጥር",
     certificateNumber: "የሰርተፊኬት ቁጥር",
     download: "ሰርተፊኬት አውርድ",
+    intro: "ምዝገባዎ በተሳካ ሁኔታ ደርሶናል። መረጃዎን ከዚህ በታች ያገኛሉ።",
+    feeNotice:
+      "ምዝገባዎ ከመጽደቁ እና ሰርተፊኬትዎን ከማውረድዎ በፊት የተጠየቀውን የምዝገባ ክፍያ መክፈል አለብዎት።",
+    keepNumber:
+      "የምዝገባ ቁጥርዎን ያስቀምጡ። በኋላ በመታወቂያ ቁጥርዎ የምዝገባዎን ሁኔታ ማየት ይችላሉ።",
+    checkStatus: "የምዝገባ ሁኔታ ይመልከቱ",
+  },
+
+  payment: {
+    infoTitle: "የክፍያ መረጃ",
+    method: "የክፍያ ዘዴ",
+    accountName: "የሂሳብ ስም",
+    accountNumber: "የሂሳብ ቁጥር",
+    address: "የክፍያ አድራሻ",
+    amount: "የምዝገባ ክፍያ",
+    instructions: "ተጨማሪ መመሪያ",
+    notConfigured:
+      "የክፍያ መረጃ እስካሁን አልታተመም። እባክዎ አስተዳዳሪውን ያግኙ።",
+
+    submitTitle: "የክፍያ ማረጋገጫ ይላኩ",
+    submitIntro:
+      "ክፍያውን ከፈጸሙ በኋላ የክፍያ ደረሰኝዎን ይጫኑ ወይም የክፍያ ማጣቀሻ ቁጥርዎን ያስገቡ። አንዱን ወይም ሁለቱንም መላክ ይችላሉ።",
+    referenceLabel: "የክፍያ ማጣቀሻ ቁጥር",
+    referenceHint: "ከባንኩ ደረሰኝ ላይ ያለው የግብይት ቁጥር።",
+    receiptLabel: "የክፍያ ደረሰኝ",
+    receiptHint: "JPG፣ PNG፣ WebP ወይም PDF። ከ4 ሜባ መብለጥ የለበትም።",
+    receiptSelected: "የተመረጠ ፋይል",
+    receiptRemove: "ፋይል ያስወግዱ",
+    submit: "የክፍያ መረጃ ላክ",
+    submitting: "በመላክ ላይ...",
+
+    submittedTitle: "የክፍያ መረጃዎ በተሳካ ሁኔታ ተልኳል።",
+    submittedBody:
+      "ክፍያዎ በአስተዳዳሪው በመመርመር ላይ ነው። ምዝገባዎ ከጸደቀ በኋላ ሰርተፊኬትዎን ማውረድ ይችላሉ።",
+    submittedOn: "የተላከበት ቀን",
+    reference: "የክፍያ ማጣቀሻ ቁጥር",
+    receipt: "የክፍያ ደረሰኝ",
+    noReceipt: "ደረሰኝ አልተጫነም",
+    noReference: "ማጣቀሻ ቁጥር አልተገባም",
+    viewReceipt: "ደረሰኙን ይመልከቱ",
+    resubmit: "የክፍያ መረጃውን ያስተካክሉ",
+
+    errors: {
+      paymentProofRequired:
+        "የክፍያ ማጣቀሻ ቁጥር ያስገቡ ወይም ደረሰኝ ይጫኑ።",
+      referenceInvalid: "ትክክለኛ የክፍያ ማጣቀሻ ቁጥር ያስገቡ።",
+      receiptType: "የሚፈቀዱት JPG፣ PNG፣ WebP እና PDF ፋይሎች ብቻ ናቸው።",
+      receiptTooLarge: "ፋይሉ ከ4 ሜባ በላይ ነው።",
+      notFound: "ምዝገባው አልተገኘም።",
+      alreadyApproved:
+        "ይህ ምዝገባ አስቀድሞ ጸድቋል፤ ተጨማሪ የክፍያ መረጃ አያስፈልግም።",
+      locked: "ክፍያዎ ተረጋግጧል፤ ማስተካከል አይቻልም።",
+      rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
+      uploadFailed: "ደረሰኙን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+      badRequest: "የላኩት መረጃ ትክክል አይደለም።",
+      serverError: "መላክ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+      networkError: "ከአገልጋዩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ያረጋግጡ።",
+    },
+  },
+
+  status: {
+    label: "የምዝገባ ሁኔታ",
+    paymentLabel: "የክፍያ ሁኔታ",
+
+    registration: {
+      pendingPayment: "ክፍያ ይጠበቃል",
+      paymentSubmitted: "ክፍያ ተልኳል",
+      approved: "ጸድቋል",
+      rejected: "ተቀባይነት አላገኘም",
+    },
+
+    payment: {
+      none: "ክፍያ አልተላከም",
+      submitted: "በመመርመር ላይ",
+      verified: "ተረጋግጧል",
+      rejected: "ተቀባይነት አላገኘም",
+    },
+
+    messages: {
+      pendingPayment:
+        "ምዝገባዎ ተሳክቷል። እባክዎ የምዝገባ ክፍያውን ፈጽመው ደረሰኝዎን ወይም የማጣቀሻ ቁጥርዎን ይላኩ።",
+      paymentSubmitted:
+        "የክፍያ መረጃዎ ተልኳል፤ በአስተዳዳሪው ማረጋገጫ በመጠባበቅ ላይ ነው።",
+      approved:
+        "እንኳን ደስ አለዎት! ምዝገባዎ ጸድቋል። አሁን ሰርተፊኬትዎን ማውረድ ይችላሉ።",
+      rejected:
+        "ምዝገባዎ ተቀባይነት አላገኘም። እባክዎ አስተዳዳሪውን ያግኙ።",
+    },
+
+    certificateLocked:
+      "ምዝገባዎ እስካሁን አልጸደቀም። አስተዳዳሪው ክፍያዎን አረጋግጦ ምዝገባዎን ካጸደቀ በኋላ ሰርተፊኬትዎን ማውረድ ይችላሉ።",
+    certificateReady: "ሰርተፊኬትዎ ለማውረድ ዝግጁ ነው።",
+    rejectionReason: "ምክንያት",
+  },
+
+  lookup: {
+    title: "የምዝገባ ሁኔታ ማጣራት",
+    intro:
+      "የምዝገባዎን ሁኔታ ለማየት እና ሰርተፊኬትዎን ለማውረድ የመታወቂያ ቁጥርዎን ያስገቡ።",
+    field: "የመታወቂያ ቁጥር",
+    submit: "ሁኔታ ይመልከቱ",
+    searching: "በመፈለግ ላይ...",
+    notFound:
+      "በገቡት የመታወቂያ ቁጥር ምዝገባ አልተገኘም። እባክዎ ቁጥሩን አረጋግጠው እንደገና ይሞክሩ።",
+    invalid: "ትክክለኛ የመታወቂያ ቁጥር ያስገቡ።",
+    registeredOn: "የተመዘገቡበት ቀን",
+  },
+
+  admin: {
+    title: "የአስተዳዳሪ ማዕከል",
+
+    login: {
+      title: "የአስተዳዳሪ መግቢያ",
+      subtitle: "ይህ ገጽ ለተፈቀደላቸው አስተዳዳሪዎች ብቻ ነው።",
+      email: "ኢሜይል",
+      password: "የይለፍ ቃል",
+      submit: "ግባ",
+      submitting: "በመግባት ላይ...",
+    },
+
+    nav: {
+      dashboard: "ዳሽቦርድ",
+      settings: "የክፍያ መረጃ",
+      password: "የይለፍ ቃል ይቀይሩ",
+      logout: "ውጣ",
+      signedInAs: "የገቡት እንደ",
+    },
+
+    mustChangePassword:
+      "የመጀመሪያውን የይለፍ ቃል እየተጠቀሙ ነው። እባክዎ አሁን ይቀይሩት።",
+
+    stats: {
+      total: "ጠቅላላ ምዝገባዎች",
+      pendingPayment: "ክፍያ የሚጠበቅ",
+      paymentSubmitted: "ክፍያ የተላከ",
+      approved: "የጸደቀ",
+      rejected: "ተቀባይነት ያላገኘ",
+    },
+
+    filters: {
+      title: "ማጣሪያ",
+      search: "ስም፣ የመታወቂያ ቁጥር፣ ስልክ ወይም የምዝገባ ቁጥር",
+      status: "የምዝገባ ሁኔታ",
+      paymentStatus: "የክፍያ ሁኔታ",
+      from: "ከቀን",
+      to: "እስከ ቀን",
+      all: "ሁሉም",
+      apply: "አጣራ",
+      reset: "አጽዳ",
+      results: "ውጤቶች",
+    },
+
+    table: {
+      registrationId: "የምዝገባ ቁጥር",
+      fullName: "ሙሉ ስም",
+      identificationId: "የመታወቂያ ቁጥር",
+      phoneNumber: "ስልክ",
+      email: "ኢሜይል",
+      registeredAt: "የምዝገባ ቀን",
+      status: "የምዝገባ ሁኔታ",
+      paymentStatus: "የክፍያ ሁኔታ",
+      reference: "የክፍያ ማጣቀሻ",
+      receipt: "ደረሰኝ",
+      actions: "እርምጃ",
+      view: "ዝርዝር ይመልከቱ",
+      empty: "ምንም ምዝገባ አልተገኘም።",
+      yes: "አለ",
+      no: "የለም",
+      previous: "ቀዳሚ",
+      next: "ቀጣይ",
+      page: "ገጽ",
+    },
+
+    details: {
+      title: "የምዝገባ ዝርዝር",
+      back: "ወደ ዳሽቦርድ ተመለስ",
+      personalSection: "የተመዝጋቢ መረጃ",
+      paymentSection: "የክፍያ መረጃ",
+      decisionSection: "ውሳኔ",
+      photo: "ፎቶ",
+      bankAccountNumber: "የባንክ ሂሳብ ቁጥር",
+      approvedBy: "ያጸደቀው",
+      approvedAt: "የጸደቀበት ቀን",
+      rejectedAt: "ውድቅ የተደረገበት ቀን",
+      verifiedBy: "ክፍያውን ያረጋገጠው",
+      receiptPreviewAlt: "የተጫነው ደረሰኝ ቅድመ እይታ",
+      openReceipt: "ደረሰኙን ክፈት",
+      downloadReceipt: "ደረሰኝ አውርድ",
+      approve: "ምዝገባውን አጽድቅ",
+      reject: "ምዝገባውን ውድቅ አድርግ",
+      approveConfirm: "ይህን ምዝገባ ማጽደቅ እንደሚፈልጉ እርግጠኛ ነዎት?",
+      rejectConfirm: "ይህን ምዝገባ ውድቅ ማድረግ እንደሚፈልጉ እርግጠኛ ነዎት?",
+      rejectReason: "ምክንያት (አማራጭ)",
+      approved: "ምዝገባው በተሳካ ሁኔታ ጸድቋል።",
+      rejected: "ምዝገባው ውድቅ ተደርጓል።",
+      working: "በማከናወን ላይ...",
+      cancel: "ተወው",
+      confirm: "አረጋግጥ",
+      noPayment: "ተመዝጋቢው እስካሁን የክፍያ መረጃ አልላከም።",
+      certificatePreview: "ሰርተፊኬቱን ይመልከቱ",
+    },
+
+    settings: {
+      title: "የክፍያ መረጃ ማስተካከያ",
+      intro:
+        "እዚህ የሚያስገቡት መረጃ ለተመዝጋቢዎች በምዝገባ ማጠናቀቂያ ገጽ ላይ ይታያል።",
+      save: "አስቀምጥ",
+      saving: "በማስቀመጥ ላይ...",
+      saved: "የክፍያ መረጃ ተስተካክሏል።",
+      amountHint: "ለምሳሌ፦ 500 ብር",
+      instructionsHint: "ለተመዝጋቢዎች ተጨማሪ መመሪያ ካለ ያስገቡ።",
+    },
+
+    password: {
+      title: "የይለፍ ቃል ይቀይሩ",
+      current: "አሁን ያለው የይለፍ ቃል",
+      new: "አዲስ የይለፍ ቃል",
+      confirm: "አዲሱን የይለፍ ቃል ያረጋግጡ",
+      hint: "ቢያንስ 12 ፊደላት መሆን አለበት።",
+      submit: "የይለፍ ቃል ቀይር",
+      saving: "በማስቀመጥ ላይ...",
+      saved: "የይለፍ ቃልዎ ተቀይሯል።",
+    },
+
+    errors: {
+      invalidCredentials: "ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም።",
+      emailInvalid: "ትክክለኛ ኢሜይል ያስገቡ።",
+      passwordRequired: "የይለፍ ቃል ያስገቡ።",
+      passwordTooShort: "የይለፍ ቃሉ ቢያንስ 12 ፊደላት መሆን አለበት።",
+      passwordTooLong: "የይለፍ ቃሉ በጣም ረጅም ነው።",
+      passwordMismatch: "የይለፍ ቃሎቹ አይመሳሰሉም።",
+      passwordUnchanged: "አዲሱ የይለፍ ቃል ከቀድሞው የተለየ መሆን አለበት።",
+      required: "ይህ መስክ ግዴታ ነው።",
+      tooLong: "የገባው ጽሑፍ በጣም ረጅም ነው።",
+      unauthorized: "እባክዎ እንደገና ይግቡ።",
+      forbidden: "ይህን እርምጃ ለመፈጸም ፈቃድ የለዎትም።",
+      notFound: "ምዝገባው አልተገኘም።",
+      invalidTransition: "ይህ ምዝገባ በዚህ ሁኔታ ላይ ይህን እርምጃ አይፈቅድም።",
+      rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
+      serverError: "እርምጃው አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+      networkError: "ከአገልጋዩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ያረጋግጡ።",
+    },
   },
 
   certificate: {
@@ -108,7 +355,9 @@ export const am = {
     presentedTo: "ይህ የምስክር ወረቀት የተሰጠው ለ",
     statement: "በሚከተለው መርሃ ግብር በተሳካ ሁኔታ ስለተመዘገበ ነው፦",
     registrationId: "የምዝገባ ቁጥር",
+    identificationId: "የመታወቂያ ቁጥር",
     certificateNumber: "የሰርተፊኬት ቁጥር",
+    registeredOn: "የተመዘገቡበት ቀን",
     issuedOn: "የተሰጠበት ቀን",
     authorizedBy: "የተፈቀደው በ",
     authorizedName: "ዶ/ር ሮቤል አለሙ መሸሻ",

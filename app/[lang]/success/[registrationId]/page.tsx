@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { formatDate, getDictionary, isLocale, localePath } from "@/lib/i18n";
+import { RegistrationStatusPanel } from "@/components/RegistrationStatusPanel";
+import { getDictionary, isLocale, localePath } from "@/lib/i18n";
+import { getPaymentSettings } from "@/lib/payment-settings";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata({
@@ -26,17 +28,30 @@ export default async function SuccessPage({
 
   const dict = await getDictionary(lang);
 
-  // Narrow select: `bankAccountNumber` is not listed, so it cannot reach this
-  // page even by accident.
-  const registration = await prisma.registration.findUnique({
-    where: { registrationId },
-    select: {
-      registrationId: true,
-      certificateNumber: true,
-      fullName: true,
-      createdAt: true,
-    },
-  });
+  // Narrow select: `bankAccountNumber` and `identificationId` are not listed,
+  // so they cannot reach this page even by accident.
+  const [registration, settings] = await Promise.all([
+    prisma.registration.findUnique({
+      where: { registrationId },
+      select: {
+        registrationId: true,
+        certificateNumber: true,
+        fullName: true,
+        createdAt: true,
+        status: true,
+        rejectionReason: true,
+        payment: {
+          select: {
+            status: true,
+            referenceNumber: true,
+            receiptUrl: true,
+            submittedAt: true,
+          },
+        },
+      },
+    }),
+    getPaymentSettings(),
+  ]);
 
   if (!registration) notFound();
 
@@ -52,18 +67,13 @@ export default async function SuccessPage({
           </h1>
         </div>
 
-        <dl className="mt-8 divide-y divide-line border-y border-line">
+        <p className="mt-4 text-base text-ink">{dict.success.intro}</p>
+        <p className="mt-2 text-sm text-muted">{dict.success.feeNotice}</p>
+
+        <dl className="mt-6 divide-y divide-line border-y border-line">
           <div className="flex flex-wrap justify-between gap-2 py-3">
             <dt className="text-sm text-muted">{dict.verify.name}</dt>
             <dd className="font-medium text-ink">{registration.fullName}</dd>
-          </div>
-          <div className="flex flex-wrap justify-between gap-2 py-3">
-            <dt className="text-sm text-muted">
-              {dict.success.registrationId}
-            </dt>
-            <dd className="font-mono font-semibold text-brand-800">
-              {registration.registrationId}
-            </dd>
           </div>
           <div className="flex flex-wrap justify-between gap-2 py-3">
             <dt className="text-sm text-muted">
@@ -73,33 +83,44 @@ export default async function SuccessPage({
               {registration.certificateNumber}
             </dd>
           </div>
-          <div className="flex flex-wrap justify-between gap-2 py-3">
-            <dt className="text-sm text-muted">{dict.verify.issuedOn}</dt>
-            <dd className="text-ink">
-              {formatDate(registration.createdAt, lang)}
-            </dd>
-          </div>
         </dl>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          {/* A plain anchor, not <Link>: this is a file download served by a
-              route handler, not a client-side navigation. `download` makes the
-              browser save it rather than trying to render the PDF inline. */}
-          <a
-            href={`/api/certificate/${registration.registrationId}?lang=${lang}`}
-            download
-            className="rounded-xl bg-brand-700 px-6 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-800"
-          >
-            {dict.success.download}
-          </a>
+        <p className="mt-4 text-sm text-muted">{dict.success.keepNumber}</p>
+      </div>
 
-          <Link
-            href={localePath(lang, "/")}
-            className="px-2 py-3 text-center text-sm font-medium text-brand-700 underline underline-offset-2 hover:text-brand-800"
-          >
-            {dict.common.backHome}
-          </Link>
-        </div>
+      <div className="mt-8">
+        <RegistrationStatusPanel
+          registration={{
+            ...registration,
+            payment: registration.payment
+              ? {
+                  status: registration.payment.status,
+                  referenceNumber: registration.payment.referenceNumber,
+                  // Only whether a receipt exists — never its storage URL.
+                  hasReceipt: Boolean(registration.payment.receiptUrl),
+                  submittedAt: registration.payment.submittedAt,
+                }
+              : null,
+          }}
+          settings={settings}
+          dict={dict}
+          locale={lang}
+        />
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <Link
+          href={localePath(lang, "/status")}
+          className="text-sm font-medium text-brand-700 underline underline-offset-2 hover:text-brand-800"
+        >
+          {dict.success.checkStatus}
+        </Link>
+        <Link
+          href={localePath(lang, "/")}
+          className="text-sm font-medium text-muted underline underline-offset-2 hover:text-ink"
+        >
+          {dict.common.backHome}
+        </Link>
       </div>
     </div>
   );
