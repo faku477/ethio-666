@@ -144,12 +144,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 6,
   },
+  /**
+   * The rule under the recipient's name.
+   *
+   * A drawn rule rather than `textDecoration`, so it stays a constant width and
+   * the name sits centred above it — an underline would hug the text and be a
+   * different length for every participant. The gap keeps it clear of the
+   * Ethiopic descenders, which reach lower than Latin ones.
+   */
   nameRule: {
     alignSelf: "center",
     width: "62%",
-    height: 0.75,
-    backgroundColor: "#e3ebe6",
-    marginTop: 6,
+    height: 1,
+    backgroundColor: "#5b6b62",
+    marginTop: 12,
   },
   /** The membership declaration — the largest block of prose on the page, so
    *  it carries its own line height rather than the Latin default. */
@@ -194,19 +202,23 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     paddingTop: 2,
   },
-  signature: { width: 250 },
+  /** Right-hand block: the seal above the authorizing name, both flush right. */
+  signature: { width: 250, alignItems: "flex-end" },
   signatureName: {
     fontSize: 15,
     fontWeight: 700,
     color: "#0d1b14",
+    textAlign: "right",
+    // Underlines the text itself rather than drawing a rule across the block,
+    // so the line is exactly as wide as the name however long the name is.
+    textDecoration: "underline",
     marginTop: 4,
   },
-  /** The seal, sitting directly above the authorizing name. */
   signatureStamp: {
     width: 76,
     height: 76,
     objectFit: "contain",
-    alignSelf: "flex-start",
+    alignSelf: "flex-end",
   },
   /** Emblems flanking the stamp, in the footer's free space. */
   emblemRow: {
@@ -306,17 +318,7 @@ function CertificateDocument({
             </View>
 
             <View style={styles.footer}>
-              {/* The seal, with the authorizing name printed beneath it. There
-                  is no signature rule: nothing is signed by hand here, and an
-                  empty line invites someone to think a signature is missing. */}
-              <View style={styles.signature}>
-                {data.stamp && (
-                  <Image src={data.stamp} style={styles.signatureStamp} />
-                )}
-                <Text style={styles.signatureName}>{t.authorizedName}</Text>
-              </View>
-
-              {/* Emblems, flanking the stamp on the right of the footer. */}
+              {/* Emblems on the left. */}
               <View style={styles.emblemRow}>
                 {data.emblems.map((emblem, index) => (
                   <Image
@@ -325,6 +327,17 @@ function CertificateDocument({
                     style={styles.emblem}
                   />
                 ))}
+              </View>
+
+              {/* The seal on the right, with the authorizing name printed
+                  beneath it. There is no signature rule: nothing is signed by
+                  hand here, and an empty line invites someone to think a
+                  signature is missing. */}
+              <View style={styles.signature}>
+                {data.stamp && (
+                  <Image src={data.stamp} style={styles.signatureStamp} />
+                )}
+                <Text style={styles.signatureName}>{t.authorizedName}</Text>
               </View>
             </View>
 
