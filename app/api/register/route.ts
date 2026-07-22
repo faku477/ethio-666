@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { allocateNumbers } from "@/lib/ids";
+import { readImageDimensions } from "@/lib/image-size";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { storePhoto } from "@/lib/storage";
@@ -8,6 +9,7 @@ import {
   collectFieldErrors,
   registrationSchema,
   sniffImageType,
+  validatePhotoDimensions,
   validatePhotoMeta,
   type FieldErrors,
 } from "@/lib/validation";
@@ -75,10 +77,35 @@ export async function POST(request: Request) {
 
   // A declared MIME type is just a header. Verify the bytes actually are one of
   // the accepted image formats before storing the file anywhere.
-  const header = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  //
+  // The first 64 KB rather than 16 bytes: PNG and WebP state their dimensions
+  // within the first 30 bytes, but a JPEG's frame header sits after however
+  // many EXIF and colour-profile segments the camera wrote first.
+  const header = new Uint8Array(await file.slice(0, 65_536).arrayBuffer());
   const sniffedType = sniffImageType(header);
   if (!sniffedType) {
     return failure({ success: false, fieldErrors: { photo: "photoType" } }, 422);
+  }
+
+  // Passport or 4x4 shape, checked here and not only in the form: the form is a
+  // convenience, and a request can be crafted without ever loading it.
+  const dimensions = readImageDimensions(header);
+  if (!dimensions) {
+    return failure(
+      { success: false, fieldErrors: { photo: "photoUnreadable" } },
+      422,
+    );
+  }
+
+  const dimensionError = validatePhotoDimensions(
+    dimensions.width,
+    dimensions.height,
+  );
+  if (dimensionError) {
+    return failure(
+      { success: false, fieldErrors: { photo: dimensionError } },
+      422,
+    );
   }
 
   // Duplicate check before the upload, so an obvious rejection does not leave a

@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   /** The membership declaration — the largest block of prose on the page, so
    *  it carries its own line height rather than the Latin default. */
   statement: {
-    fontSize: 20,
+    fontSize: 18,
     lineHeight: 1.6,
     color: "#116ed1",
     textAlign: "center",
@@ -195,27 +195,19 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   signature: { width: 250 },
-  signatureLabel: { fontSize: 12, color: "#5b6b62" },
-  signatureRole: { fontSize: 11, color: "#5b6b62", marginTop: 2 },
   signatureName: {
     fontSize: 15,
     fontWeight: 700,
     color: "#0d1b14",
     marginTop: 4,
   },
-  /**
-   * The stamp sits in the signing position. The negative bottom margin pulls it
-   * down over the rule so it reads as a seal pressed across the line, and stops
-   * its full height from pushing the footer onto a second page.
-   */
+  /** The seal, sitting directly above the authorizing name. */
   signatureStamp: {
     width: 76,
     height: 76,
     objectFit: "contain",
     alignSelf: "flex-start",
-    marginBottom: -24,
   },
-  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 8 },
   /** Emblems flanking the stamp, in the footer's free space. */
   emblemRow: {
     flexDirection: "row",
@@ -314,9 +306,15 @@ function CertificateDocument({
             </View>
 
             <View style={styles.footer}>
-              {/* Greeting, then what sits below it (stamp and signature), then
-                  the seal pressed across the rule the name is printed under. */}
-
+              {/* The seal, with the authorizing name printed beneath it. There
+                  is no signature rule: nothing is signed by hand here, and an
+                  empty line invites someone to think a signature is missing. */}
+              <View style={styles.signature}>
+                {data.stamp && (
+                  <Image src={data.stamp} style={styles.signatureStamp} />
+                )}
+                <Text style={styles.signatureName}>{t.authorizedName}</Text>
+              </View>
 
               {/* Emblems, flanking the stamp on the right of the footer. */}
               <View style={styles.emblemRow}>

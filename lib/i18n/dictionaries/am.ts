@@ -75,7 +75,7 @@ export const am = {
             choose: "ፎቶ ይምረጡ",
             replace: "ፎቶ ይቀይሩ",
             remove: "ፎቶ ያስወግዱ",
-            hint: "JPG፣ PNG ወይም WebP። ከ4 ሜባ መብለጥ የለበትም።",
+            hint: "የፓስፖርት መጠን (35 x 45 ሚሜ) ወይም ባለአራት ማዕዘን 4 x 4 ፎቶ። JPG፣ PNG ወይም WebP፤ ቢያንስ 300 x 300 ፒክሰል፣ ከ4 ሜባ መብለጥ የለበትም።",
             previewAlt: "የተመረጠው ፎቶ ቅድመ እይታ",
         },
 
@@ -92,6 +92,13 @@ export const am = {
             photoRequired: "ፎቶ ይጫኑ።",
             photoType: "የሚፈቀዱት JPG፣ PNG እና WebP ፎቶዎች ብቻ ናቸው።",
             photoTooLarge: "ፎቶው ከ4 ሜባ በላይ ነው።",
+      photoTooSmallPixels:
+        "ፎቶው ለህትመት በጣም ትንሽ ነው። ቢያንስ 300 x 300 ፒክሰል መሆን አለበት።",
+      photoTooManyPixels: "የፎቶው ፒክሰል ብዛት በጣም ከፍተኛ ነው። ያነሰ ፎቶ ይጠቀሙ።",
+      photoAspect:
+        "ፎቶው የፓስፖርት መጠን (35 x 45 ሚሜ) ወይም ባለአራት ማዕዘን 4 x 4 መሆን አለበት። ፎቶውን ወደዚህ መጠን ቆርጠው እንደገና ይጫኑ።",
+      photoUnreadable:
+        "ይህ ፎቶ ማንበብ አልተቻለም። በJPG ወይም በPNG አስቀምጠው እንደገና ይሞክሩ።",
             rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
             badRequest: "የላኩት መረጃ ትክክል አይደለም።",
             duplicate: "ይህ ምዝገባ አስቀድሞ ተከናውኗል።",

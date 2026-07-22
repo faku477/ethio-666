@@ -33,6 +33,67 @@ const PHOTO_SIGNATURES: { type: string; bytes: number[]; offset: number }[] = [
   { type: "image/webp", bytes: [0x57, 0x45, 0x42, 0x50], offset: 8 },
 ];
 
+/* -------------------------------------------------------------------------
+ * Photo shape
+ *
+ * A participant photo must be a passport photo or a 4x4, because it is printed
+ * into a fixed frame on the certificate: a phone snapshot in 16:9 either gets
+ * cropped through the subject's face or letterboxed with white bars.
+ *
+ * Shape is checked, not physical size. A file has no millimetres — only pixels
+ * — so what is enforced is the aspect ratio those formats share, plus enough
+ * resolution to print:
+ *
+ *   35 x 45 mm passport   0.778
+ *   50 x 50 mm / 2 x 2 in 1.000
+ *   4 x 4 (square)        1.000
+ *
+ * The band is deliberately a little wider than those exact numbers: scans and
+ * phone-camera crops land a few percent off, and rejecting a good photo over
+ * one percent of aspect is worse than accepting a slightly loose one.
+ * ---------------------------------------------------------------------- */
+
+/** Shortest accepted side, in pixels. Below this the certificate print is mush. */
+export const PHOTO_MIN_SIDE = 300;
+
+/** Longest accepted side. Guards against a decompression bomb. */
+export const PHOTO_MAX_SIDE = 6000;
+
+/** width / height. Portrait passport at one end, square at the other. */
+export const PHOTO_MIN_ASPECT = 0.7;
+export const PHOTO_MAX_ASPECT = 1.05;
+
+/**
+ * Validates the shape of a photo. Returns a dictionary key, or null when the
+ * photo is acceptable.
+ *
+ * Runs in the browser (from the decoded image) and on the server (from the file
+ * header), so both sides apply exactly the same rule.
+ */
+export function validatePhotoDimensions(
+  width: number,
+  height: number,
+): string | null {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) {
+    return "photoUnreadable";
+  }
+
+  if (width < PHOTO_MIN_SIDE || height < PHOTO_MIN_SIDE) {
+    return "photoTooSmallPixels";
+  }
+
+  if (width > PHOTO_MAX_SIDE || height > PHOTO_MAX_SIDE) {
+    return "photoTooManyPixels";
+  }
+
+  const aspect = width / height;
+  if (aspect < PHOTO_MIN_ASPECT || aspect > PHOTO_MAX_ASPECT) {
+    return "photoAspect";
+  }
+
+  return null;
+}
+
 /**
  * Returns the image type implied by the file's leading bytes, or null when the
  * content matches none of the accepted formats.

@@ -70,7 +70,7 @@ export const en: Dictionary = {
             choose: "Choose photo",
             replace: "Replace photo",
             remove: "Remove photo",
-            hint: "JPG, PNG or WebP. Maximum 4 MB.",
+            hint: "Passport photo (35 x 45 mm) or a square 4 x 4. JPG, PNG or WebP, at least 300 x 300 pixels, maximum 4 MB.",
             previewAlt: "Preview of the selected photo",
         },
 
@@ -88,6 +88,13 @@ export const en: Dictionary = {
             photoRequired: "Upload a photo.",
             photoType: "Only JPG, PNG and WebP images are allowed.",
             photoTooLarge: "The photo is larger than 4 MB.",
+            photoTooSmallPixels:
+                "The photo is too small to print. It must be at least 300 x 300 pixels.",
+            photoTooManyPixels: "The photo has too many pixels. Use a smaller image.",
+            photoAspect:
+                "The photo must be a passport photo (35 x 45 mm) or a square 4 x 4. Crop it to that shape and upload it again.",
+            photoUnreadable:
+                "This image could not be read. Save it as a JPG or PNG and try again.",
             rateLimited:
                 "Too many attempts. Please wait a moment and try again.",
             badRequest: "The submitted data is not valid.",
@@ -362,9 +369,7 @@ export const en: Dictionary = {
         certificateNumber: "Certificate Number",
         registeredOn: "Registration Date",
         issuedOn: "Date of Issue",
-        regards: "With regards",
-        stampAndSignature: "Stamp and signature",
-        authorizedName: "Prof. Abel Ayalew",
+                authorizedName: "Prof. Abel Ayalew",
         verifyHint: "Scan this QR code to verify authenticity",
     },
 

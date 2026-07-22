@@ -8,6 +8,7 @@ import {
   ALLOWED_PHOTO_TYPES,
   collectFieldErrors,
   registrationSchema,
+  validatePhotoDimensions,
   validatePhotoMeta,
   type FieldErrors,
 } from "@/lib/validation";
@@ -115,6 +116,8 @@ export function RegistrationForm({ locale, dict }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [photo, setPhoto] = useState<SelectedPhoto | null>(null);
+  /** Set when the chosen file is the wrong shape or too small to print. */
+  const [photoShapeError, setPhotoShapeError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -153,13 +156,67 @@ export function RegistrationForm({ locale, dict }: Props) {
   const t = (key: string): string =>
     dict.register.errors[key as ErrorKey] ?? dict.common.errorTitle;
 
-  function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
-    selectPhoto(event.target.files?.[0] ?? null);
+  /**
+   * Reads the decoded pixel dimensions of a selected file.
+   *
+   * Resolves to null when the browser cannot decode it — the server checks the
+   * bytes itself, so an undecodable file is not rejected here on that basis
+   * alone.
+   */
+  function readDimensions(
+    file: File,
+  ): Promise<{ width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const image = new window.Image();
+
+      image.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve({ width: image.naturalWidth, height: image.naturalHeight });
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+
+      image.src = url;
+    });
+  }
+
+  async function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    selectPhoto(file);
+    setPhotoShapeError(null);
     setFieldErrors((prev) => ({ ...prev, photo: undefined }));
+
+    if (!file) return;
+
+    // Checked as soon as the file is chosen rather than at submit: telling
+    // somebody their photo is the wrong shape before they fill in the rest of
+    // the form is the difference between a correction and a lost submission.
+    const metaError = validatePhotoMeta(file);
+    if (metaError) {
+      setFieldErrors((prev) => ({ ...prev, photo: metaError }));
+      return;
+    }
+
+
+    const dimensions = await readDimensions(file);
+    if (!dimensions) return;
+
+    const dimensionError = validatePhotoDimensions(
+      dimensions.width,
+      dimensions.height,
+    );
+    if (dimensionError) {
+      setPhotoShapeError(dimensionError);
+      setFieldErrors((prev) => ({ ...prev, photo: dimensionError }));
+    }
   }
 
   function removePhoto() {
     selectPhoto(null);
+    setPhotoShapeError(null);
     // Clearing the input's value matters: without it, re-picking the same file
     // fires no change event and the photo silently fails to come back.
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -181,7 +238,10 @@ export function RegistrationForm({ locale, dict }: Props) {
       email: form.get("email") ?? "",
     });
 
-    const photoError = validatePhotoMeta(photo?.file ?? null);
+    // `photoShapeError` was decided when the file was chosen; carry it into the
+    // submit check so a wrong-shaped photo cannot slip through by ignoring the
+    // message and pressing the button anyway.
+    const photoError = validatePhotoMeta(photo?.file ?? null) ?? photoShapeError;
     const errors: FieldErrors = parsed.success
       ? {}
       : collectFieldErrors(parsed.error);
