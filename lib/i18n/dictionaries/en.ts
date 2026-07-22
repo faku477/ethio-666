@@ -348,14 +348,16 @@ export const en: Dictionary = {
   certificate: {
     title: "Certificate",
     presentedTo: "This is to certify that",
-    statement: "has successfully registered for",
+    statement:
+      "From today you are a member of Ethio-Illuminati (666), and this certificate is issued to you in the name of the organization. From today the organization also permits you to receive any benefit granted to its members.",
     registrationId: "Registration Number",
     identificationId: "Identification Number",
     certificateNumber: "Certificate Number",
     registeredOn: "Registration Date",
     issuedOn: "Date of Issue",
-    authorizedBy: "Authorized By",
-    authorizedName: "Dr. Robel Alemu Mesheha",
+    regards: "With regards",
+    stampAndSignature: "Stamp and signature",
+    authorizedName: "Prof. Abal Ayalew (abel ayalew)",
     verifyHint: "Scan this QR code to verify authenticity",
   },
 

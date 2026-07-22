@@ -51,133 +51,154 @@ export type CertificateData = {
   registeredOn: string;
   /** Date the certificate was issued — i.e. when an administrator approved it. */
   issuedOn: string;
-  eventName: string;
   /** data: URI of the QR code pointing at the public verification URL. */
   qrCode: string;
   /** data: URI of the participant photo, when one could be loaded. */
   photo: string | null;
   /** data: URI of the organization stamp, when `public/stamp.png` exists. */
   stamp: string | null;
+  /** data: URI of the full-page watermark drawn behind everything else. */
+  background: string | null;
+  /** data: URIs of the emblems flanking the stamp. Any length; missing files
+   *  are simply absent, so the certificate still renders. */
+  emblems: string[];
 };
 
 const styles = StyleSheet.create({
   page: {
     fontFamily: "NotoEthiopic",
     backgroundColor: "#ffffff",
-    paddingVertical: 24,
-    paddingHorizontal: 40,
+    paddingVertical: 20,
+    paddingHorizontal: 34,
+  },
+  /**
+   * Full-bleed watermark.
+   *
+   * Absolutely positioned and declared before everything else so it paints
+   * underneath: @react-pdf/renderer has no z-index, so paint order is document
+   * order. Kept faint enough that black body text still reads over it.
+   */
+  watermark: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+    opacity: 0.07,
   },
   frame: {
     flexGrow: 1,
     borderWidth: 2,
     borderColor: "#027a48",
     borderStyle: "solid",
-    padding: 22,
+    padding: 16,
   },
   inner: {
     flexGrow: 1,
     borderWidth: 0.75,
     borderColor: "#d4a017",
     borderStyle: "solid",
-    paddingVertical: 12,
-    paddingHorizontal: 26,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  headerStamp: { width: 78, height: 78 },
-  headerSpacer: { width: 78 },
+  headerStamp: { width: 68, height: 68 },
+  headerSpacer: { width: 68 },
   title: {
-    fontSize: 27,
+    fontSize: 32,
     fontWeight: 700,
     color: "#05603a",
     textAlign: "center",
     letterSpacing: 0.5,
   },
   eventName: {
-    fontSize: 11,
+    fontSize: 13,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 5,
+    marginTop: 4,
   },
   rule: {
     alignSelf: "center",
-    width: 108,
+    width: 120,
     height: 2,
     backgroundColor: "#d4a017",
-    marginTop: 8,
+    marginTop: 6,
   },
   presentedTo: {
-    fontSize: 11,
+    fontSize: 13,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 12,
+    marginTop: 8,
   },
   name: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 700,
     color: "#0d1b14",
     textAlign: "center",
-    marginTop: 8,
+    marginTop: 6,
   },
   nameRule: {
     alignSelf: "center",
     width: "62%",
     height: 0.75,
     backgroundColor: "#e3ebe6",
-    marginTop: 8,
+    marginTop: 6,
   },
+  /** The membership declaration — the largest block of prose on the page, so
+   *  it carries its own line height rather than the Latin default. */
   statement: {
-    fontSize: 11,
-    color: "#5b6b62",
+    fontSize: 14,
+    lineHeight: 1.6,
+    color: "#0d1b14",
     textAlign: "center",
     marginTop: 10,
-  },
-  program: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: "#027a48",
-    textAlign: "center",
-    marginTop: 6,
+    paddingHorizontal: 12,
   },
   body: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 12,
+    marginTop: 10,
   },
   photo: {
-    width: 100,
-    height: 100,
+    width: 92,
+    height: 92,
     objectFit: "cover",
     borderWidth: 0.75,
     borderColor: "#e3ebe6",
     borderStyle: "solid",
   },
-  details: { flexGrow: 1, paddingHorizontal: 18, justifyContent: "center" },
-  detailRow: { flexDirection: "row", marginBottom: 6 },
-  detailLabel: { fontSize: 9, color: "#5b6b62", width: 108 },
-  detailValue: { fontSize: 11, fontWeight: 700, color: "#0d1b14" },
-  qrBlock: { alignItems: "center", width: 104 },
-  qr: { width: 84, height: 84 },
+  details: { flexGrow: 1, paddingHorizontal: 16, justifyContent: "center" },
+  detailRow: { flexDirection: "row", marginBottom: 4 },
+  detailLabel: { fontSize: 11, color: "#5b6b62", width: 124 },
+  detailValue: { fontSize: 13, fontWeight: 700, color: "#0d1b14" },
+  qrBlock: { alignItems: "center", width: 96 },
+  qr: { width: 76, height: 76 },
   qrHint: {
-    fontSize: 6,
+    fontSize: 7,
     color: "#5b6b62",
     textAlign: "center",
-    marginTop: 4,
+    marginTop: 3,
   },
   footer: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
     marginTop: "auto",
-    paddingTop: 4,
+    paddingTop: 2,
   },
-  signature: { width: 200 },
-  signatureLabel: { fontSize: 9, color: "#5b6b62" },
+  signature: { width: 250 },
+  signatureLabel: { fontSize: 12, color: "#5b6b62" },
+  signatureRole: { fontSize: 11, color: "#5b6b62", marginTop: 2 },
   signatureName: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: 700,
     color: "#0d1b14",
     marginTop: 4,
@@ -188,15 +209,22 @@ const styles = StyleSheet.create({
    * its full height from pushing the footer onto a second page.
    */
   signatureStamp: {
-    width: 84,
-    height: 84,
+    width: 76,
+    height: 76,
     objectFit: "contain",
     alignSelf: "flex-start",
-    marginTop: 0,
-    marginBottom: -26,
+    marginBottom: -24,
   },
-  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 10 },
-  serial: { fontSize: 7, color: "#8a9a91", textAlign: "right", marginTop: 6 },
+  signatureLine: { height: 0.75, backgroundColor: "#0d1b14", marginTop: 8 },
+  /** Emblems flanking the stamp, in the footer's free space. */
+  emblemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingBottom: 2,
+  },
+  emblem: { width: 54, height: 54, objectFit: "contain" },
+  serial: { fontSize: 8, color: "#8a9a91", textAlign: "right", marginTop: 4 },
 });
 
 function CertificateDocument({
@@ -218,6 +246,11 @@ function CertificateDocument({
           without it, a long participant name or a locale with longer strings
           silently spills onto a second, near-empty page. */}
       <Page size="A4" orientation="landscape" style={styles.page} wrap={false}>
+        {/* First child, so every later element paints on top of it. */}
+        {data.background && (
+          <Image src={data.background} style={styles.watermark} />
+        )}
+
         <View style={styles.frame}>
           <View style={styles.inner}>
             <View style={styles.header}>
@@ -241,7 +274,6 @@ function CertificateDocument({
             <View style={styles.nameRule} />
 
             <Text style={styles.statement}>{t.statement}</Text>
-            <Text style={styles.program}>{data.eventName}</Text>
 
             <View style={styles.body}>
               {data.photo ? (
@@ -282,15 +314,27 @@ function CertificateDocument({
             </View>
 
             <View style={styles.footer}>
-              {/* Label, then the authorizing person's name, then the rule they
-                  sign on — so the signature sits over the printed name. */}
+              {/* Greeting, then what sits below it (stamp and signature), then
+                  the seal pressed across the rule the name is printed under. */}
               <View style={styles.signature}>
-                <Text style={styles.signatureLabel}>{t.authorizedBy}</Text>
-                <Text style={styles.signatureName}>{t.authorizedName}</Text>
+                <Text style={styles.signatureLabel}>{t.regards}</Text>
+                <Text style={styles.signatureRole}>{t.stampAndSignature}</Text>
                 {data.stamp && (
                   <Image src={data.stamp} style={styles.signatureStamp} />
                 )}
                 <View style={styles.signatureLine} />
+                <Text style={styles.signatureName}>{t.authorizedName}</Text>
+              </View>
+
+              {/* Emblems, flanking the stamp on the right of the footer. */}
+              <View style={styles.emblemRow}>
+                {data.emblems.map((emblem, index) => (
+                  <Image
+                    key={index}
+                    src={emblem}
+                    style={styles.emblem}
+                  />
+                ))}
               </View>
             </View>
 

@@ -353,14 +353,16 @@ export const am = {
   certificate: {
     title: "የምስክር ወረቀት",
     presentedTo: "ይህ የምስክር ወረቀት የተሰጠው ለ",
-    statement: "በሚከተለው መርሃ ግብር በተሳካ ሁኔታ ስለተመዘገበ ነው፦",
+    statement:
+      "ከዛሬ ቀን ጀምሮ የኢትዮ-ኢሉሚናንት(666) አባል ሥለሆኑ በድርጅቱ ሥም ይህ የምስክር ወረቀት ተሰጥተኋል። ሥለሆነም እርስወ ከዛሬ ጀምር ከድርጅቱ ለአባላት የሚሠጡትን ማንኛውንም ጥቅማ ጥቅምም ማግኘት እድችሉ ድርጅቱ ፈቃድ ሰቷል።",
     registrationId: "የምዝገባ ቁጥር",
     identificationId: "የመታወቂያ ቁጥር",
     certificateNumber: "የሰርተፊኬት ቁጥር",
     registeredOn: "የተመዘገቡበት ቀን",
     issuedOn: "የተሰጠበት ቀን",
-    authorizedBy: "የተፈቀደው በ",
-    authorizedName: "ዶ/ር ሮቤል አለሙ መሸሻ",
+    regards: "ከሠላምታ ጋር",
+    stampAndSignature: "ማህተም እና ፊርማ",
+    authorizedName: "ፕ/ር አባል አያሌው (abel ayalew)",
     verifyHint: "ትክክለኛነቱን ለማረጋገጥ ይህን QR ኮድ ይቃኙ",
   },
 
