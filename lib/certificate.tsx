@@ -154,9 +154,9 @@ const styles = StyleSheet.create({
   /** The membership declaration — the largest block of prose on the page, so
    *  it carries its own line height rather than the Latin default. */
   statement: {
-    fontSize: 14,
+    fontSize: 18,
     lineHeight: 1.6,
-    color: "#0d1b14",
+    color: "#116ed1",
     textAlign: "center",
     marginTop: 10,
     paddingHorizontal: 12,
@@ -317,8 +317,6 @@ function CertificateDocument({
               {/* Greeting, then what sits below it (stamp and signature), then
                   the seal pressed across the rule the name is printed under. */}
               <View style={styles.signature}>
-                <Text style={styles.signatureLabel}>{t.regards}</Text>
-                <Text style={styles.signatureRole}>{t.stampAndSignature}</Text>
                 {data.stamp && (
                   <Image src={data.stamp} style={styles.signatureStamp} />
                 )}

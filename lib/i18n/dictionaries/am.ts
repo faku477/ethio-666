@@ -349,8 +349,6 @@ export const am = {
         certificateNumber: "የሰርተፊኬት ቁጥር",
         registeredOn: "የተመዘገቡበት ቀን",
         issuedOn: "የተሰጠበት ቀን",
-        regards: "ከሠላምታ ጋር",
-        stampAndSignature: "ማህተም እና ፊርማ",
         authorizedName: "ፕሮፌሰር አቤል አያሌው",
         verifyHint: "ትክክለኛነቱን ለማረጋገጥ ይህን QR ኮድ ይቃኙ",
     },
