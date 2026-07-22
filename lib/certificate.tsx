@@ -202,23 +202,28 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     paddingTop: 2,
   },
-  /** Right-hand block: the seal above the authorizing name, both flush right. */
-  signature: { width: 250, alignItems: "flex-end" },
+  /**
+   * Right-hand block: the seal sitting directly on top of the authorizing name.
+   *
+   * No fixed width, so the block shrinks to the name and `alignItems: center`
+   * centres the seal over it — with a fixed width the seal would centre on the
+   * box instead, and drift off the name as the name's length changed.
+   */
+  signature: { alignItems: "center" },
   signatureName: {
     fontSize: 15,
     fontWeight: 700,
     color: "#0d1b14",
-    textAlign: "right",
-    // Underlines the text itself rather than drawing a rule across the block,
-    // so the line is exactly as wide as the name however long the name is.
-    textDecoration: "underline",
-    marginTop: 4,
+    textAlign: "center",
   },
   signatureStamp: {
     width: 76,
     height: 76,
     objectFit: "contain",
-    alignSelf: "flex-end",
+    alignSelf: "center",
+    // Pulls the seal down onto the name: the artwork carries transparent
+    // padding of its own, which otherwise reads as a gap nothing put there.
+    marginBottom: -8,
   },
   /** Emblems flanking the stamp, in the footer's free space. */
   emblemRow: {
