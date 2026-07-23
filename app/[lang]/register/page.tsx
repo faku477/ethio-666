@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { RegistrationForm } from "@/components/RegistrationForm";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { getPaymentSettings } from "@/lib/payment-settings";
 
 export async function generateMetadata({
   params,
@@ -20,7 +21,10 @@ export default async function RegisterPage({
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
 
-  const dict = await getDictionary(lang);
+  const [dict, settings] = await Promise.all([
+    getDictionary(lang),
+    getPaymentSettings(),
+  ]);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
@@ -33,7 +37,7 @@ export default async function RegisterPage({
         {/* The dictionary is resolved on the server and handed to the client
             component as a prop, so no translation data ships for the locale
             the visitor is not using. */}
-        <RegistrationForm locale={lang} dict={dict} />
+        <RegistrationForm locale={lang} dict={dict} settings={settings} />
       </div>
     </div>
   );

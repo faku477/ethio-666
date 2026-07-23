@@ -39,11 +39,19 @@ export function RegistrationStatusPanel({
   settings,
   dict,
   locale,
+  allowPaymentSubmission = true,
 }: {
   registration: RegistrationView;
   settings: PaymentSettings;
   dict: Dictionary;
   locale: Locale;
+  /**
+   * Whether to show the pay-and-submit-proof section. The registration form now
+   * collects payment proof up front, so the post-registration success page
+   * passes false — there is no further step there. The ID-number status lookup
+   * leaves it true, as the place to submit or correct proof after the fact.
+   */
+  allowPaymentSubmission?: boolean;
 }) {
   const statusKey = REGISTRATION_STATUS_KEYS[registration.status];
   const approved = canDownloadCertificate(registration.status);
@@ -158,8 +166,9 @@ export function RegistrationStatusPanel({
         </section>
       )}
 
-      {/* Pay / submit proof. Hidden once approved: there is nothing left to do. */}
-      {!approved && (
+      {/* Pay / submit proof. Hidden once approved: there is nothing left to do,
+          and hidden on the success page, where proof was just submitted. */}
+      {!approved && allowPaymentSubmission && (
         <>
           <PaymentInstructions settings={settings} dict={dict} />
 

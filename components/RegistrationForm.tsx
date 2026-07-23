@@ -3,11 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { PaymentInstructions } from "@/components/PaymentInstructions";
 import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import type { PaymentSettings } from "@/lib/payment-settings";
 import {
   ALLOWED_PHOTO_TYPES,
+  ALLOWED_RECEIPT_TYPES,
   collectFieldErrors,
   registrationSchema,
+  validatePaymentSubmission,
   validatePhotoDimensions,
   validatePhotoMeta,
   type FieldErrors,
@@ -16,9 +20,11 @@ import {
 type Props = {
   locale: Locale;
   dict: Dictionary;
+  settings: PaymentSettings;
 };
 
 type ErrorKey = keyof Dictionary["register"]["errors"];
+type PaymentErrorKey = keyof Dictionary["payment"]["errors"];
 
 /** The chosen file plus the object URL rendered as its preview. */
 type SelectedPhoto = { file: File; url: string };
@@ -111,13 +117,15 @@ function TextField({
   );
 }
 
-export function RegistrationForm({ locale, dict }: Props) {
+export function RegistrationForm({ locale, dict, settings }: Props) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const receiptInputRef = useRef<HTMLInputElement>(null);
 
   const [photo, setPhoto] = useState<SelectedPhoto | null>(null);
   /** Set when the chosen file is the wrong shape or too small to print. */
   const [photoShapeError, setPhotoShapeError] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -153,8 +161,22 @@ export function RegistrationForm({ locale, dict }: Props) {
     [],
   );
 
+  // Payment error keys live under `dict.payment.errors`; registration keys under
+  // `dict.register.errors`. One lookup covers both so any field's error renders.
   const t = (key: string): string =>
-    dict.register.errors[key as ErrorKey] ?? dict.common.errorTitle;
+    dict.register.errors[key as ErrorKey] ??
+    dict.payment.errors[key as PaymentErrorKey] ??
+    dict.common.errorTitle;
+
+  function handleReceiptChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setReceipt(event.target.files?.[0] ?? null);
+    setFieldErrors((prev) => ({ ...prev, receipt: undefined }));
+  }
+
+  function removeReceipt() {
+    setReceipt(null);
+    if (receiptInputRef.current) receiptInputRef.current.value = "";
+  }
 
   /**
    * Reads the decoded pixel dimensions of a selected file.
@@ -247,8 +269,16 @@ export function RegistrationForm({ locale, dict }: Props) {
       : collectFieldErrors(parsed.error);
     if (photoError) errors.photo = photoError;
 
-    if (Object.keys(errors).length > 0) {
+    // Payment proof — a reference number, a receipt, or both — is required.
+    const reference = String(form.get("reference") ?? "");
+    const paymentErrors = validatePaymentSubmission({ reference, receipt });
+    if (paymentErrors.reference) errors.reference = paymentErrors.reference;
+    if (paymentErrors.receipt) errors.receipt = paymentErrors.receipt;
+
+    if (Object.keys(errors).length > 0 || paymentErrors.form) {
       setFieldErrors(errors);
+      // The "attach a receipt or enter a reference" message is form-level.
+      if (paymentErrors.form) setFormError(paymentErrors.form);
       return;
     }
 
@@ -261,6 +291,8 @@ export function RegistrationForm({ locale, dict }: Props) {
         payload.set(field, String(form.get(field) ?? ""));
       }
       payload.set("photo", (photo as SelectedPhoto).file);
+      payload.set("reference", String(form.get("reference") ?? "").trim());
+      if (receipt) payload.set("receipt", receipt);
 
       const response = await fetch("/api/register", {
         method: "POST",
@@ -433,6 +465,92 @@ export function RegistrationForm({ locale, dict }: Props) {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Payment — the fee details to pay, then proof of that payment. Merged
+          into the registration form so there is a single submission. */}
+      <div className="border-t border-line pt-5">
+        <PaymentInstructions settings={settings} dict={dict} />
+      </div>
+
+      <p className="text-sm text-muted">{dict.payment.submitIntro}</p>
+
+      <div>
+        <label
+          htmlFor="reference"
+          className="block text-sm font-medium text-ink"
+        >
+          {dict.payment.referenceLabel}
+        </label>
+        <input
+          id="reference"
+          name="reference"
+          type="text"
+          autoComplete="off"
+          disabled={submitting}
+          aria-invalid={fieldErrors.reference ? true : undefined}
+          aria-describedby={
+            fieldErrors.reference ? "reference-error" : "reference-hint"
+          }
+          className={[
+            "mt-1.5 w-full rounded-lg border bg-surface px-3.5 py-2.5 text-base outline-none transition-colors",
+            "focus:border-brand-600 focus:ring-2 focus:ring-brand-100",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+            fieldErrors.reference ? "border-red-400" : "border-line",
+          ].join(" ")}
+        />
+        {fieldErrors.reference ? (
+          <p id="reference-error" className="mt-1.5 text-sm text-red-600">
+            {t(fieldErrors.reference)}
+          </p>
+        ) : (
+          <p id="reference-hint" className="mt-1.5 text-xs text-muted">
+            {dict.payment.referenceHint}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="receipt" className="block text-sm font-medium text-ink">
+          {dict.payment.receiptLabel}
+        </label>
+        <input
+          ref={receiptInputRef}
+          id="receipt"
+          name="receipt"
+          type="file"
+          accept={ALLOWED_RECEIPT_TYPES.join(",")}
+          onChange={handleReceiptChange}
+          disabled={submitting}
+          aria-invalid={fieldErrors.receipt ? true : undefined}
+          aria-describedby={fieldErrors.receipt ? "receipt-error" : "receipt-hint"}
+          className="mt-1.5 block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-brand-800 hover:file:bg-brand-100"
+        />
+        {fieldErrors.receipt ? (
+          <p id="receipt-error" className="mt-1.5 text-sm text-red-600">
+            {t(fieldErrors.receipt)}
+          </p>
+        ) : (
+          <p id="receipt-hint" className="mt-1.5 text-xs text-muted">
+            {dict.payment.receiptHint}
+          </p>
+        )}
+
+        {receipt && (
+          <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-ink">
+            <span className="font-medium break-all">
+              {dict.payment.receiptSelected}: {receipt.name}
+            </span>
+            <button
+              type="button"
+              onClick={removeReceipt}
+              disabled={submitting}
+              className="font-medium text-red-700 underline underline-offset-2 hover:text-red-800"
+            >
+              {dict.payment.receiptRemove}
+            </button>
+          </p>
+        )}
       </div>
 
       <button

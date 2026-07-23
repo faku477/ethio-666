@@ -180,7 +180,13 @@ export const registrationSchema = z.object({
 export type RegistrationInput = z.input<typeof registrationSchema>;
 export type RegistrationData = z.output<typeof registrationSchema>;
 
-export type RegistrationField = keyof RegistrationInput | "photo";
+// `reference` and `receipt` are collected on the same one-page form as the
+// registration fields, so they share its error map.
+export type RegistrationField =
+  | keyof RegistrationInput
+  | "photo"
+  | "reference"
+  | "receipt";
 
 /** Field -> first error key, the shape the form renders from. */
 export type FieldErrors = Partial<Record<RegistrationField, string>>;

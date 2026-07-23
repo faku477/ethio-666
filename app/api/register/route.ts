@@ -4,11 +4,13 @@ import { allocateNumbers } from "@/lib/ids";
 import { readImageDimensions } from "@/lib/image-size";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
-import { storePhoto } from "@/lib/storage";
+import { storePhoto, storeReceipt } from "@/lib/storage";
 import {
   collectFieldErrors,
   registrationSchema,
   sniffImageType,
+  sniffReceiptType,
+  validatePaymentSubmission,
   validatePhotoDimensions,
   validatePhotoMeta,
   type FieldErrors,
@@ -108,6 +110,46 @@ export async function POST(request: Request) {
     );
   }
 
+  // Payment proof is part of the registration form now: a reference number, a
+  // receipt, or both. Validated here as well as in the form.
+  const reference = String(form.get("reference") ?? "");
+  const receiptEntry = form.get("receipt");
+  const receiptFile =
+    receiptEntry instanceof File && receiptEntry.size > 0 ? receiptEntry : null;
+
+  const paymentErrors = validatePaymentSubmission({
+    reference,
+    receipt: receiptFile,
+  });
+  if (Object.keys(paymentErrors).length > 0) {
+    const { form: paymentFormError, ...paymentFieldErrors } = paymentErrors;
+    return failure(
+      {
+        success: false,
+        ...(paymentFormError ? { error: paymentFormError } : {}),
+        ...(Object.keys(paymentFieldErrors).length > 0
+          ? { fieldErrors: paymentFieldErrors as FieldErrors }
+          : {}),
+      },
+      422,
+    );
+  }
+
+  // Verify the receipt's bytes before storing anything, same as the photo.
+  let receiptType: string | null = null;
+  if (receiptFile) {
+    const receiptHeader = new Uint8Array(
+      await receiptFile.slice(0, 16).arrayBuffer(),
+    );
+    receiptType = sniffReceiptType(receiptHeader);
+    if (!receiptType) {
+      return failure(
+        { success: false, fieldErrors: { receipt: "receiptType" } },
+        422,
+      );
+    }
+  }
+
   // Duplicate check before the upload, so an obvious rejection does not leave a
   // stray object in storage.
   //
@@ -145,14 +187,20 @@ export async function POST(request: Request) {
   }
 
   let stored;
+  let storedReceipt: Awaited<ReturnType<typeof storeReceipt>> | null = null;
   try {
     // Deliberately outside the transaction: this is network I/O and would hold
     // a database transaction open for its full duration.
     stored = await storePhoto(file, sniffedType);
+    if (receiptFile && receiptType) {
+      storedReceipt = await storeReceipt(receiptFile, receiptType);
+    }
   } catch (error) {
-    console.error("photo upload failed", error);
+    console.error("upload failed", error);
     return failure({ success: false, error: "uploadFailed" }, 500);
   }
+
+  const trimmedReference = reference.trim();
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -169,6 +217,23 @@ export async function POST(request: Request) {
           photoUrl: stored.url,
           photoMimeType: stored.mimeType,
           photoSize: stored.size,
+          // Payment proof is submitted with the registration, so the record is
+          // born in the "payment submitted" state, awaiting admin verification.
+          status: "PAYMENT_SUBMITTED",
+          paymentSubmittedAt: new Date(),
+          payment: {
+            create: {
+              referenceNumber: trimmedReference || null,
+              ...(storedReceipt
+                ? {
+                    receiptUrl: storedReceipt.url,
+                    receiptMimeType: storedReceipt.mimeType,
+                    receiptSize: storedReceipt.size,
+                  }
+                : {}),
+              status: "SUBMITTED",
+            },
+          },
         },
         select: { id: true },
       });

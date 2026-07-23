@@ -68,7 +68,11 @@ export default async function SuccessPage({
         </div>
 
         <p className="mt-4 text-base text-ink">{dict.success.intro}</p>
-        <p className="mt-2 text-sm text-muted">{dict.success.feeNotice}</p>
+        {/* Payment proof was submitted with the registration, so this now says
+            it is under review rather than asking the participant to pay next. */}
+        <p className="mt-2 text-sm text-muted">
+          {dict.payment.submittedBody}
+        </p>
 
         <dl className="mt-6 divide-y divide-line border-y border-line">
           <div className="flex flex-wrap justify-between gap-2 py-3">
@@ -105,6 +109,7 @@ export default async function SuccessPage({
           settings={settings}
           dict={dict}
           locale={lang}
+          allowPaymentSubmission={false}
         />
       </div>
 
