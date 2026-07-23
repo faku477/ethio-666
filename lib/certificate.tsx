@@ -62,6 +62,10 @@ export type CertificateData = {
   /** data: URIs of the emblems flanking the stamp. Any length; missing files
    *  are simply absent, so the certificate still renders. */
   emblems: string[];
+  /** data: URI of the flag shown top-left, when its file exists. */
+  flagLeft: string | null;
+  /** data: URI of the flag shown top-right, when its file exists. */
+  flagRight: string | null;
 };
 
 const styles = StyleSheet.create({
@@ -109,8 +113,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  headerStamp: { width: 68, height: 68 },
-  headerSpacer: { width: 68 },
+  /** Flags flanking the title. A thin border gives the white parts of the USA
+   *  flag an edge against the page. */
+  headerFlag: {
+    width: 76,
+    height: 46,
+    objectFit: "contain",
+    borderWidth: 0.5,
+    borderColor: "#e3ebe6",
+    borderStyle: "solid",
+  },
+  headerSpacer: { width: 76 },
   title: {
     fontSize: 32,
     fontWeight: 700,
@@ -263,8 +276,10 @@ function CertificateDocument({
         <View style={styles.frame}>
           <View style={styles.inner}>
             <View style={styles.header}>
-              {data.stamp ? (
-                <Image src={data.stamp} style={styles.headerStamp} />
+              {/* Ethiopian flag on the left. A spacer holds the slot when the
+                  file is missing, so the title stays optically centred. */}
+              {data.flagLeft ? (
+                <Image src={data.flagLeft} style={styles.headerFlag} />
               ) : (
                 <View style={styles.headerSpacer} />
               )}
@@ -272,8 +287,12 @@ function CertificateDocument({
                 <Text style={styles.title}>{t.title}</Text>
                 <Text style={styles.eventName}>{dict.site.name}</Text>
               </View>
-              {/* Balances the header so the title stays optically centred. */}
-              <View style={styles.headerSpacer} />
+              {/* USA flag on the right. */}
+              {data.flagRight ? (
+                <Image src={data.flagRight} style={styles.headerFlag} />
+              ) : (
+                <View style={styles.headerSpacer} />
+              )}
             </View>
 
             <View style={styles.rule} />

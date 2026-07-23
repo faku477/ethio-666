@@ -145,13 +145,16 @@ export async function GET(
   // verification page is public and the certificate number is its only key.
   const verifyUrl = `${appUrl(request)}/verify/${registration.certificateNumber}`;
 
-  const [qrCode, photo, stamp, background, ...emblems] = await Promise.all([
-    QRCode.toDataURL(verifyUrl, { margin: 1, width: 320 }),
-    loadPhoto(registration.photoUrl),
-    loadPublicImage("stamp.png"),
-    loadPublicImage(BACKGROUND_IMAGE),
-    ...EMBLEM_IMAGES.map(loadPublicImage),
-  ]);
+  const [qrCode, photo, stamp, background, flagLeft, flagRight, ...emblems] =
+    await Promise.all([
+      QRCode.toDataURL(verifyUrl, { margin: 1, width: 320 }),
+      loadPhoto(registration.photoUrl),
+      loadPublicImage("stamp.png"),
+      loadPublicImage(BACKGROUND_IMAGE),
+      loadPublicImage("ethiopain_flag.png"),
+      loadPublicImage("usa_flag.png"),
+      ...EMBLEM_IMAGES.map(loadPublicImage),
+    ]);
 
   const data: CertificateData = {
     fullName: registration.fullName,
@@ -165,6 +168,8 @@ export async function GET(
     photo,
     stamp,
     background,
+    flagLeft,
+    flagRight,
     // Whichever files are actually present; a missing one is simply absent.
     emblems: emblems.filter((emblem): emblem is string => emblem !== null),
   };
