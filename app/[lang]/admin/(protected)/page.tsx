@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminFilters } from "@/components/admin/AdminFilters";
+import { DeleteRegistrationButton } from "@/components/admin/DeleteRegistrationButton";
 import { PaymentStatusBadge, RegistrationStatusBadge } from "@/components/StatusBadge";
 import type { Prisma } from "@/lib/generated/prisma/client";
 import {
@@ -287,15 +288,22 @@ export default async function AdminDashboardPage({
                     : dict.admin.table.no}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <Link
-                    href={localePath(
-                      lang,
-                      `/admin/registrations/${registration.registrationId}`,
-                    )}
-                    className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
-                  >
-                    {dict.admin.table.view}
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={localePath(
+                        lang,
+                        `/admin/registrations/${registration.registrationId}`,
+                      )}
+                      className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
+                    >
+                      {dict.admin.table.view}
+                    </Link>
+                    <DeleteRegistrationButton
+                      registrationId={registration.registrationId}
+                      locale={lang}
+                      dict={dict}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}

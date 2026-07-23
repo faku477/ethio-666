@@ -148,3 +148,33 @@ export async function readStoredFile(
     return null;
   }
 }
+
+/**
+ * Best-effort deletion of a stored file, whichever driver wrote it.
+ *
+ * Never throws: a delete that fails must not abort the database transaction it
+ * accompanies. The worst case is an orphaned blob, not a half-deleted record.
+ */
+export async function deleteStoredFile(storedUrl: string): Promise<void> {
+  try {
+    if (storedUrl.startsWith("/api/uploads/")) {
+      const relative = storedUrl.slice("/api/uploads/".length);
+      const resolved = path.resolve(LOCAL_UPLOAD_DIR, relative);
+      const root = path.resolve(LOCAL_UPLOAD_DIR);
+      // A malformed row must not turn a delete into an arbitrary file removal.
+      if (!resolved.startsWith(root + path.sep)) return;
+
+      const { unlink } = await import("node:fs/promises");
+      await unlink(resolved).catch(() => undefined);
+      return;
+    }
+
+    if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+      const { del } = await import("@vercel/blob");
+      const token = process.env.BLOB_READ_WRITE_TOKEN;
+      await del(storedUrl, token ? { token } : undefined);
+    }
+  } catch (error) {
+    console.error("stored file deletion failed", error);
+  }
+}

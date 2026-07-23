@@ -268,6 +268,7 @@ export const am = {
             receipt: "ደረሰኝ",
             actions: "እርምጃ",
             view: "ዝርዝር ይመልከቱ",
+      delete: "ሰርዝ",
             empty: "ምንም ምዝገባ አልተገኘም።",
             yes: "አለ",
             no: "የለም",
@@ -303,6 +304,10 @@ export const am = {
             confirm: "አረጋግጥ",
             noPayment: "ተመዝጋቢው እስካሁን የክፍያ መረጃ አልላከም።",
             certificatePreview: "ሰርተፊኬቱን ይመልከቱ",
+      delete: "ምዝገባውን ሰርዝ",
+      deleteConfirm:
+        "ይህን ምዝገባ በቋሚነት መሰረዝ ይፈልጋሉ? ተመዝጋቢውን፣ ክፍያውን፣ የተጫነውን ፎቶና ደረሰኝ ያስወግዳል። ይህ እርምጃ መመለስ አይቻልም።",
+      deleted: "ምዝገባው ተሰርዟል።",
         },
 
         settings: {
@@ -341,7 +346,8 @@ export const am = {
             notFound: "ምዝገባው አልተገኘም።",
             invalidTransition: "ይህ ምዝገባ በዚህ ሁኔታ ላይ ይህን እርምጃ አይፈቅድም።",
             rateLimited: "ብዙ ሙከራዎች ተደርገዋል። እባክዎ ትንሽ ቆይተው ይሞክሩ።",
-            serverError: "እርምጃው አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+            deleteFailed: "ምዝገባውን መሰረዝ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+      serverError: "እርምጃው አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
             networkError: "ከአገልጋዩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ያረጋግጡ።",
         },
     },

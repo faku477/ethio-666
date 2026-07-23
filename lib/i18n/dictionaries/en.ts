@@ -276,6 +276,7 @@ export const en: Dictionary = {
             receipt: "Receipt",
             actions: "Action",
             view: "View details",
+            delete: "Delete",
             empty: "No registrations found.",
             yes: "Yes",
             no: "No",
@@ -313,6 +314,10 @@ export const en: Dictionary = {
             noPayment:
                 "The registrant has not submitted any payment information yet.",
             certificatePreview: "View certificate",
+            delete: "Delete registration",
+            deleteConfirm:
+                "Delete this registration permanently? This removes the registrant, their payment, and the uploaded photo and receipt. This cannot be undone.",
+            deleted: "Registration deleted.",
         },
 
         settings: {
@@ -354,6 +359,7 @@ export const en: Dictionary = {
                 "This registration cannot take that action in its current state.",
             rateLimited:
                 "Too many attempts. Please wait a moment and try again.",
+            deleteFailed: "The registration could not be deleted. Please try again.",
             serverError: "The action failed. Please try again.",
             networkError: "Could not reach the server. Check your connection.",
         },

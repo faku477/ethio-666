@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminDecisionPanel } from "@/components/admin/AdminDecisionPanel";
+import { DeleteRegistrationButton } from "@/components/admin/DeleteRegistrationButton";
 import { PaymentStatusBadge, RegistrationStatusBadge } from "@/components/StatusBadge";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
@@ -199,6 +200,17 @@ export default async function AdminRegistrationDetailPage({
               {dict.admin.details.certificatePreview}
             </a>
           )}
+
+          {/* Destructive, so set apart from the approve/reject controls. */}
+          <div className="mt-6 border-t border-red-100 pt-4">
+            <DeleteRegistrationButton
+              registrationId={registration.registrationId}
+              locale={lang}
+              dict={dict}
+              variant="button"
+              redirectToList
+            />
+          </div>
         </section>
 
         {/* Payment */}
