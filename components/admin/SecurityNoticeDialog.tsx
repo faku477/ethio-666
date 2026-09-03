@@ -18,7 +18,6 @@ const NOTICE = {
     body:
       "በስርዓቱ ላይ የተጠረጠረ የማጭበርበር ይዘት በመገኘቱ ምክንያት ስርዓትዎ በቅርቡ ከአገልግሎት ውጭ ይደረጋል። " +
       "ይህ ስህተት ነው ብለው የሚያምኑ ከሆነ እባክዎ ወዲያውኑ የስርዓት አገልግሎት ማዕከላችንን ያግኙ።",
-    contact: "የአገልግሎት ማዕከል፦",
     ok: "እሺ",
     cancel: "ተወው",
   },
@@ -27,15 +26,10 @@ const NOTICE = {
     body:
       "Your system will be deactivated soon because suspected fraudulent content was found on it. " +
       "If you believe this is not the case, please contact our system contact center immediately.",
-    contact: "Contact center:",
     ok: "OK",
     cancel: "Cancel",
   },
 } as const;
-
-/** Edit these to the real contact center details. */
-const CONTACT_PHONE = "+251 11 000 0000";
-const CONTACT_EMAIL = "support@example.com";
 
 /** Where the acknowledgement for the current login is remembered. */
 const ACK_KEY = "admin.securityNotice.ack";
@@ -176,21 +170,6 @@ export function SecurityNoticeDialog({ locale }: { locale: Locale }) {
         <p lang="en" className="mt-4 text-sm leading-relaxed text-ink">
           {en.body}
         </p>
-
-        <div className="mt-5 rounded-xl border border-line bg-amber-50 p-4 text-sm text-amber-900">
-          <p lang="am" className="font-semibold">
-            {am.contact} <span dir="ltr">{CONTACT_PHONE}</span>
-          </p>
-          <p lang="en" className="mt-1">
-            {en.contact} <span dir="ltr">{CONTACT_PHONE}</span> ·{" "}
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="underline underline-offset-2"
-            >
-              {CONTACT_EMAIL}
-            </a>
-          </p>
-        </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
           <button
