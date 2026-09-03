@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { AdminNav } from "@/components/admin/AdminNav";
+import { SecurityNoticeDialog } from "@/components/admin/SecurityNoticeDialog";
 import { getAdmin } from "@/lib/auth";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 
@@ -29,6 +30,8 @@ export default async function ProtectedAdminLayout({
 
   return (
     <div className="min-h-full bg-canvas">
+      <SecurityNoticeDialog locale={lang} />
+
       <AdminNav locale={lang} dict={dict} adminName={admin.name} />
 
       {admin.mustChangePassword && (

@@ -30,6 +30,17 @@ const scrypt = promisify(scryptCallback) as (
 
 export const SESSION_COOKIE = "admin_session";
 
+/**
+ * A readable companion to the session cookie, holding a fresh id per login.
+ *
+ * The session cookie itself is httpOnly, so the browser cannot tell one login
+ * from the next. This marker can be read by client code, which is what lets the
+ * security notice appear once per login instead of on every page view. It
+ * carries no authority: forging or deleting it only changes whether a dialog is
+ * shown.
+ */
+export const LOGIN_MARKER_COOKIE = "admin_login_id";
+
 /** Sessions are short: an admin dashboard left open on a shared machine is a
  *  standing grant over everybody's personal data. */
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
@@ -111,6 +122,13 @@ export async function createSession(
   });
 
   const store = await cookies();
+  store.set(LOGIN_MARKER_COOKIE, randomUUID(), {
+    httpOnly: false,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt,
+  });
   store.set(SESSION_COOKIE, token, {
     httpOnly: true,
     // `lax` — not `strict` — so returning to the dashboard from an external
@@ -138,6 +156,7 @@ export async function destroySession(): Promise<void> {
   }
 
   store.delete(SESSION_COOKIE);
+  store.delete(LOGIN_MARKER_COOKIE);
 }
 
 /**
